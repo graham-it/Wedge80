@@ -42,7 +42,7 @@ Extended commands:
 |CHAR|Displays a string of characters on current bitmap/text screen|
 |AUTOFAST|Enables the AUTOFAST mode (FAST/SLOW to disable)|
 |HELP|Displays system status or Online Gude|
-|QUIT|Returns to BASIC V7.0|
+|QUIT|Returns to BASIC 7.0|
 
 
 Extended functions:
