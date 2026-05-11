@@ -15,7 +15,7 @@ https://csdb.dk/scener/?id=40810
 ### Introduction
 Wedge80 is a program that extends the Commodore 128's BASIC 7.0 to take advantage of the graphics capabilities offered by the MOS 8563 VDC (Video Display Controller) chip, which is normally used only in 80-column text mode.
 
-Wedge80 is compatible with the PAL versions of the C128/C128D, equipped with 16k or 64k bytes of video RAM dedicated to the VDC chip, and with the official BASIC 7.0 ROM revisions released between 1985 and 1986.
+Wedge80 is compatible with the PAL versions of the C128/C128D, equipped with 16k or 64k bytes of video RAM dedicated to the VDC chip, and with the official BASIC 7.0 ROM revisions released by Commodore (1985/1986).
 
 
 ### Extended BASIC
