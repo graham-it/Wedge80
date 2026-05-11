@@ -25,30 +25,34 @@ To access the VDC chip's graphics capabilities, Wedge80 uses the same instructio
 Thus, Wedge80 can handle both VDC and VIC-II graphics, ensuring full compatibility with existing software.
 
 A complete list of Wedge80 commands and extended functions is available in the docs files included.
-    
-Extended commands:\
-GRAPHIC	Selects the current screen mode\
-COLOR	Sets a color for the selected source\
-SCNCLR	Clears the selected screen mode\
-LOCATE	Places the pixel cursor to a specified position\
-DRAW	Draws dots, lines, and shapes\
-BOX	Draws a BOX on the screen\
-CIRCLE	Draws circles, ellipses or arcs\
-PAINT	Fills an area starting from a specified position\
-SSHAPE	Saves an area of the the screen into a BASIC string variable\
-GSHAPE	Draws a shape stored in a BASIC string variable\
-CHAR	Displays a string of characters on current bitmap/text screen\
-AUTOFAST	Enables the AUTOFAST mode (FAST/SLOW to disable)\
-HELP	Displays system status or Online Gude\
-QUIT	Returns to BASIC V7.0
+
+Extended commands:
+|||
+|--|--|
+|GRAPHIC|Selects the current screen mode|
+|COLOR|Sets a color for the selected source|
+|SCNCLR|Clears the selected screen mode|
+|LOCATE|Places the pixel cursor to a specified position|
+|DRAW|Draws dots, lines, and shapes|
+|BOX|Draws a BOX on the screen|
+|CIRCLE|Draws circles, ellipses or arcs|
+|PAINT|Fills an area starting from a specified position|
+|SSHAPE|Saves an area of the the screen into a BASIC string variable|
+|GSHAPE|Draws a shape stored in a BASIC string variable|
+|CHAR|Displays a string of characters on current bitmap/text screen|
+|AUTOFAST|Enables the AUTOFAST mode (FAST/SLOW to disable)|
+|HELP|Displays system status or Online Gude|
+|QUIT|Returns to BASIC V7.0|
 
 
-Extended functions:\
-POS	Returns the cursor position within the current text screen window\
-RCLR	Returns the value of the color source specified\
-RDOT	Returns the current bitmap coordinates or pixel status\
-RGR	Returns the value of the current screen mode\
-RWINDOW	Returns dimension information about the current screen or window
+Extended functions:
+|||
+|--|--|
+|POS|Returns the cursor position within the current text screen window|
+|RCLR|Returns the value of the color source specified|
+|RDOT|Returns the current bitmap coordinates or pixel status|
+|RGR|Returns the value of the current screen mode|
+|RWINDOW|Returns dimension information about the current screen or window|
 
 
 ### Installation
@@ -82,10 +86,11 @@ Once the VDC bitmap mode is activated, you can use the following command to draw
 
 -    DRAW [mode][,x0,y0][<TO|,> xn,yn][...]
 
-The 'mode' option (as with the 'BOX' and 'CIRCLE' commands) specifies how pixels are drawn and replaces the 'source' option in BASIC 7.0 commands:
-- 0	= erase
-- 1	= draw (default)
-- 2	= XOR with the pixels already on the screen
+|mode|drawing method|
+|:--:|--|
+|0|Erase|
+|1|Draw (default)|
+|2|XOR with the pixels already on the screen|
 
 
 ### Online Guide
