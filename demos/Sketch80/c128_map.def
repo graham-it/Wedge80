@@ -1,0 +1,1343 @@
+;Commodore 128 memory map
+;Copyright (c) 2026 Graham (Francesco Gramignani)
+
+;Version 2.04
+;Revision 1/5/2026
+
+; --------------------
+; - OS addresses
+; --------------------
+
+;Zero page
+D8502	= $00		;Data direction register for processor's on-chip I/O port
+R8502	= $01		;Data register for processor's on-chip I/O port
+BANK	= $02		;Target bank for JMPFAR and JSRFAR
+PC_HI	= $03		;Target address for JMPFAR and JSRFAR (hi-byte)
+PC_LO	= $04		;Target address for JMPFAR and JSRFAR (lo-byte)
+S_REG	= $05		;Status register storage for JMPFAR and JSRFAR
+A_REG	= $06		;Accumulator storage for JMPFAR and JSRFAR
+X_REG	= $07		;X register storage for JMPFAR and JSRFAR
+Y_REG	= $08		;Y register storage for JMPFAR and JSRFAR
+STKPTR	= $09		;Stack pointer storage for JSRFAR and MONITOR
+CHARAC	= $09		;Working storage for various routines
+INTEGR	= $09		;Working storage for various routines
+ENDCHR	= $0a		;Working storage for various routines
+TRMPOS	= $0b		;Current screen column for TAB and SPC calculations
+VERCKB	= $0c		;BASIC LOAD/VERIFY flag (0 = LOAD, nonzero = VERIFY)
+COUNT	= $0d		;Working storage for various routines
+DIMFLG	= $0e		;Array dimension flag
+VALTYP	= $0f		;Variable type flag ($00 = numeric, nonzero = string)
+INTFLG	= $10		;Numeric variable type flag ($00 = floating point, $80 = integer)
+GARBFL	= $11		;Working storage for various routines
+SUBFLG	= $12		;Integer/subscript prohibit flag (bit 7)
+INPFLG	= $13		;Input source flag
+TANSGN	= $14		;Tangent sign flag / Comparison type flag
+CHANNL	= $15		;Logical file number for BASIC input and output
+LINNUM	= $16		;Integer value (16-bit) of ASCII digit string (LSB,MSB)
+TEMPPT	= $18		;Pointer into temporary string descriptor stack:
+			;$lb = no entries (stack empty)
+			;$1e = one entry
+			;$21 = two entries
+			;$24 = three entries (stack full)
+LASTPT	= $19		;Pointer to most recent descriptor stack entry (2 bytes)
+TEMPST	= $1b		;Temporary string descriptor stack ($1b-$23, 9 bytes) (first 2 bytes used by PAINT)
+INDEX1	= $24		;Multipurpose address pointer
+INDEX2	= $26		;Multipurpose address pointer
+RESHO	= $28		;Temporary storage area for multiplication and division ($28-$2c, 5 bytes)
+TXTTAB	= $2d		;Pointer to the start of BASIC Program Text in RAM 0 (default = $1c01, graphics = $4001)
+VARTAB	= $2f		;Pointer to the start of the BASIC variables storage area in RAM 1 (default = $0400)
+ARYTAB	= $31		;Pointer to the start of the BASIC array storage area
+STREND	= $33		;Pointer to the end of the BASIC array storage area (+1), and the start of free RAM
+FRETOP	= $35		;Pointer to the bottom of the string text storage area (string pool)
+FRESPC	= $37		;Temporary pointer into the string pool
+MAXMEM1	= $39		;[MAX_MEM_1] Top of memory (+1) reserved for BASIC variables in RAM 1 (default = $ff00)
+			;(after changing the value here, a CLR is required to update the other pointers)
+CURLIN	= $3b		;Current BASIC line number (hi-byte: $ff = no line number)
+TXTPTR	= $3d		;Pointer for main BASIC character retrieval routine
+FNDPNT	= $3f		;Working pointer for various routines (RENUMBER and PRINT USING)
+DATLIN	= $41		;Line number of current DATA statement (2 bytes)
+DATPTR	= $43		;Pointer to next DATA item
+INPPTR	= $45		;Text pointer for input
+VARNAM	= $47		;Current variable name (2 bytes)
+VARPNT	= $49		;Pointer to variable descriptor
+FORPNT	= $4b		;Variable descriptor pointer and working storage (2 bytes)
+LSTPNT	= $4b		;LIST pointer (index into the current line) (1 byte)
+VARTXT	= $4d		;Temporary storage for text pointer (used by FRMEVL)
+OPPTR	= $4d		;Pointer to operator (used by INPCON)
+OPMASK	= $4f		;Relational operator flag
+DEFPNT	= $50		;Defined function pointer and working pointer
+TEMPF3	= $50		;Temporary storage for floating point value ($50-$54, 5 bytes)
+DSCPNT	= $52		;Variable address storage and working pointer (2 bytes)
+HELPER	= $55		;HELP flag
+JMPER	= $56		;BASIC function execution vector ($56-$58, 3 bytes) (1st byte = $4c -> JMP $xxxx)
+TEMPF1	= $59		;Floating point work area ($59-$5d, 5 bytes)
+ARYPNT	= $5a		;[ARRYPNT] Temporary array pointer
+HIGHDS	= $5a		;Multipurpose working pointer (used by MAIN1 and RENUMBER)
+HIGHTR	= $5c		;Multipurpose address pointer (used by MAIN1 and RENUMBER)
+STR1	= $5d		;String length and pointer for MID$ (2 bytes)
+TEMPF2	= $5e		;Temporary storage for floating point value ($5e-$62, 5 bytes)
+			;Working pointer for garbage collection (first 2 bytes)
+DECCNT	= $5f		;Decimal point position (used by FOUT routine)
+STR2	= $60		;Substring length and pointer for MID$ (3 bytes)
+T0_T2	= $60		;[T0-T2] Monitor zero-page pointers and working storage ($60-$68, 11 bytes)
+LOWTR	= $61		;Multipurpose address pointer (LIST, DELETE)
+FAC1	= $63		;Floating point accumulator #1 ($63-$67, 5 bytes)
+FACEXP	= $63		;FAC#1 exponent
+DSCTMP	= $63		;Temporary variable descriptor (3 bytes)
+LTFLAG	= $63		;PAINT left flag
+RTFLAG	= $64		;PAINT right flag
+FACHO	= $64		;FAC#1 mantissa (M1)
+FACMOH	= $65		;FAC#1 mantissa (M2)
+FACMO	= $66		;FAC#1 mantissa (M3) (together with FACLO is used as temporary string address)
+FACLO	= $67		;FAC#1 mantissa (M4)
+FACSGN	= $68		;Sign of FAC#1 (bit 7)
+SGNFLG	= $69		;Sign flag during conversion (used by FIN) / Count of terms in series evaluation
+FAC2	= $6a		;Floating point accumulator #2 ($6a-$6e, 5 bytes)
+ARGSGN	= $6f		;Sign of FAC#2 (bit 7)
+ARISGN	= $70		;Sign comparison flag
+STRNG1	= $70		;Multipurpose address pointer (2 bytes)
+FACOV	= $71		;Rounding flag for FAC#1
+STRNG2	= $72		;Multipurpose address pointer and working storage (2 bytes)
+AUTINC	= $74		;Step value for autoincrement (2 bytes)
+MVDFLG	= $76		;Graphics area flag (0 = no graphics area allocated)
+ZPTMP1	= $77		;[Z_P_TEMP_1] General-purpose working storage
+HULP	= $78		;String offset pointer (2 bytes) (used by MID$ and PLAY routines)
+SYNTMP	= $79		;Multipurpose temporary storage
+MTXTPTR	= $7a		;Index into input buffer for monitor [BUF]
+DSDESC	= $7a		;Descriptor for disk error string DS$ (3 bytes)
+TOS	= $7d		;BASIC runtime stack pointer
+RUNMOD	= $7f		;RUN mode flag (0 = immediate/direct mode)
+			;bits	7 = RUN mode
+			; "	6 = a program is being loaded for execution (RUN "filename")
+			; "   5:0 = not used
+POINT	= $80		;Decimal point position (PRINT USING)
+PARST	= $80		;Parameter flags for DOS support commands (2 bytes)
+OLDSTK	= $82		;Storage for processor stack pointer
+COLSEL	= $83		;Color source for current graphics command
+MCOL1	= $84		;[MULTICOLOR_1]	Color source 2 storage
+MCOL2	= $85		;[MULTICOLOR_2]	Color source 3 storage
+FGCOL	= $86		;[FOREGROUND] Current foreground color (source 1) storage
+SCALEX	= $87		;Horizontal scaling factor (LSB/MSB)
+SCALEY	= $89		;Vertical scaling factor (LSB/MSB)
+STOPNB	= $8b		;PAINT mode flag ($00 = stop on same, $80 = stop on any)
+GRAPNT	= $8c		;Address pointer for graphics routines
+VTEMP	= $8e		;[VTEMP1, VTEMP2] Temporary storage for graphics routines (2 bytes)
+STATUS	= $90		;Status flag for tape and serial bus operations
+STKEY	= $91		;Scan value of STOP key column ($ff = no key pressed)
+			;bit 0 ($fe) =	'1' key
+			; "  1 ($fd) =	'<-' (left arrow)
+			; "  2 ($fb) =	CTRL
+			; "  3 ($f7) =	'2' key
+			; "  4 ($ef) =	SPACE bar
+			; "  5 ($df) =	Commodore logo
+			; "  6 ($bf) =	'Q' key
+			; "  7 ($7f) =	RUN/STOP
+SVXT	= $92		;Tape timing baseline adjustment factor
+VERCK	= $93		;Kernal LOAD/VERIFY flag / Monitor operation flag
+C3P0	= $94		;Serial deferred character flag (bit 7 on = a character is waiting in BSOUR)
+BSOUR	= $95		;Serial character buffer (bytes sent over the serial bus)
+SYNO	= $96		;Cassette block synchronization count
+XSAV	= $97		;Temporary register storage (used by GETIN and BASIN routines)
+LDTND	= $98		;Number of files currently open
+DFLTN	= $99		;Current input device (default = $00, keyboard)
+DFLTO	= $9a		;Current output device (default = $03, screen)
+PRTY	= $9b		;Tape character parity
+DPSW	= $9c		;Tape dipole received flag
+MSGFLG	= $9d		;Kernal message control flag (0 = RUN mode, $80 = direct mode)
+			;bits	7 = Kernal control messages
+			; "	6 = Kernal error messages
+			; "   5:0 = not used
+PTR1	= $9e		;Tape pass 1 error-log pointer (also used by disk routines and poll for function key ROMs)
+PTR2	= $9f		;Tape pass 2 error-log pointer (also used by disk routines and Monitor)
+TIME	= $a0		;Software jiffy clock (3 bytes)
+PCNTR	= $a3		;Tape: Count of bits to be read or written
+R2D2	= $a3		;Serial: EOI flag
+FIRT	= $a4		;Tape: Half-cycle indicator
+BSOUR1	= $a4		;Serial: Byte received
+CNTDN	= $a5		;Tape: Leader synchronization countdown
+			;Serial: Count of bits to send / [COUNT] burst mode byte count
+BUFPT	= $a6		;Pointer into cassette buffer ($c0 = filled)
+SHCNL	= $a7		;Tape: Leader dipole count / block indicator
+INBIT	= $a7		;RS-232: Current bit received
+RER	= $a8		;Tape: Half-cycle indicator for writing / error flag for reading
+BITCI	= $a8		;RS-232: Count of bits remaining to be received
+REZ	= $a9		;Tape: Word marker flag / half-cycle flag
+RINONE	= $a9		;RS-232: Start bit received flag
+RDFLG	= $aa		;Tape; Read phase flag
+RIDATA	= $aa		;RS-232: Assembly byte for received bits
+SHCNH	= $ab		;Tape: Leader dipole counter / checksum work byte
+RIPRTY	= $ab		;RS-232: Received byte parity
+DTBOOT	= $ac		;Work area for disk booting ($ac-$af, 4 bytes)
+SAL	= $ac		;[SAL-SAH] Pointer to the starting address of a LOAD / Screen scrolling
+EAL	= $ae 		;[EAL-EAH] Pointer to ending address of LOAD (end of program)
+CMPO	= $b0		;Tape adjustable baseline compensation factor
+TEMP	= $b1		;Working storage for tape compensation (CMPO)
+TAPE1	= $b2		;Pointer to cassette buffer (default = $0b00)
+SNSW1	= $b4		;Tape: leader/data flag
+BITTS	= $b4		;RS-232: Count of bits transmitted
+DIFF	= $b5		;Tape: Leader completed flag
+NXTBIT	= $b5		;RS-232: Next bit to send
+PDP	= $b6		;Tape: Error flag / end of block flag
+RODATA	= $b6		;RS-232: Character being sent
+FNLEN	= $b7		;Length of current filename
+LADDR	= $b8		;[LA] Logical file number
+SADDR	= $b9		;[SA] Current secondary address
+FADDR	= $ba		;[FA] Current device number (last used device)
+FNADR	= $bb		;Pointer to start of filename
+OCHAR	= $bd		;Tape: Byte read from tape / byte to be written to tape
+			;Serial: Current byte during burst mode load
+ROPRTY	= $bd		;RS-232: Parity calculation working storage
+FSBLK	= $be		;Cassette read block count
+MYCH	= $bf		;Tape: Assembly area for byte being read
+DRIVE	= $bf		;Serial: Default drive number for booting
+CAS1	= $c0		;Tape motor interlock (updated by the system jiffy IRQ routine at $eed0)
+STADDR	= $c1		;[STAL-STAH] I/O start address
+MEMUSS	= $c3		;[TMP2] Tape LOAD/SAVE temporary address (2 bytes)
+TDATA	= $c5		;[DATA] Bit read from tape / checksum of block written to tape
+IOBANK	= $c6		;[BA] Bank where data for SAVE, LOAD, or VERIFY is found (configured by SETBANK) (default = 0)
+FNBANK	= $c7		;Bank where filename for OPEN, SAVE, LOAD, or VERIFY is found (configured by SETBANK) (default = 15)
+RIBUF	= $c8		;Pointer to RS-232 input buffer
+ROBUF	= $ca		;Pointer to RS-232 output buffer
+KEYTAB	= $cc		;Pointer to current keyboard decode table
+IMPARM	= $ce		;Pointer for Kernal PRIMM routine
+NDX	= $d0		;Number of characters in keyboard buffer
+KYNDX	= $d1		;Number of characters pending from programmable key string
+KEYIDX	= $d2		;Pointer into the programmable key definition area
+SHFLAG	= $d3		;Shift key status flag (0 = none)
+			;bits	7 = extra characters read using the VIC-II chip lines are being scanned
+			; "   6:5 = not used
+			; "	4 = CAPS LOCK
+			; "	3 = ALT
+			; "	2 = CTRL
+			; "	1 = Commodore logo
+			; "	0 = SHIFT
+SFDX	= $d4		;Current key pressed ($58 = none)
+LSTX	= $d5		;Last key pressed ($58 = none)
+CRSW	= $d6		;Input source flag (0 = keyboard, otherwise = screen)
+MODE	= $d7		;Active screen flag (bit 7)
+			;clear = 40-column (VIC-II)
+			;set   = 80-column (VDC)
+GRAPHM	= $d8		;Mode flag for 40-column screen
+			;bits	7 = multicolor
+			; "	6 = split bitmapped/text
+			; "	5 = bitmapped
+			; "   4:0 = not used
+CHAREN	= $d9		;Character RAM/ROM fetch flag (bit 2)
+SEDSAL	= $da		;Screen Editor zero-page work area ($da-$df, 6 bytes)
+PNT	= $e0		;Pointer to the address of the current screen line
+USER	= $e2		;Pointer to first attribute memory location for current line
+SCBOT	= $e4		;Bottom margin of current window
+SCTOP	= $e5		;Top margin of current window
+SCLF	= $e6		;Left margin of current window
+SCRT	= $e7		;Right margin of current window
+LSXP	= $e8		;Cursor row for start of input
+LSTP	= $e9		;Cursor column for start of input
+INDX	= $ea 		;Column of last nonspace character on logical line
+TBLX	= $eb		;Cursor row
+PNTR	= $ec		;Position of cursor within current physical line
+LINES	= $ed		;Maximum number of rows allowed in output window
+COLUMNS	= $ee		;Maximum number of columns allowed per row
+DATAX	= $ef		;Character to print
+LSTCHR	= $f0		;Last character printed
+TXTCOL	= $f1		;[COLOR] Attribute of current character
+			;40-columns (VIC-II)	80-columns (VDC)
+			;bits 7:4 = not used	bits	7 = character set (0 = uppercase, 1 = lowercase)
+			; "   3:0 = color code	 "	6 = reversed
+			;			 "	5 = underlined
+			;			 "	4 = flashing
+			;			 "	3 = red
+			;			 "	2 = green
+			;			 "	1 = blue
+			;			 "	0 = intensity
+TCOLOR	= $f2		;Temporary storage for attribute byte
+RVS	= $f3		;Reverse mode flag (0 = not active)
+QTSW	= $f4		;Quote mode flag (0 = not active)
+INSRT	= $f5		;Number of pending inserts
+INSFLG	= $f6		;Autoinsert mode flag (bit 7)
+LOCKS	= $f7		;Case switching / scroll pause control flag
+			;bits	7 = SHIFT+Commodore key combination (0 = enabled, 1 = disabled)
+			; "	6 = NO SCROLL key or CTRL+S key combination (0 = enabled, 1 = disabled)
+			; "   5:0 = not used
+SCROLL	= $f8		;Scroll/link control flag
+			;bits	7 = screen scrolling (0 = enabled, 1 = disabled)
+			; "	6 = logical lines linking (0 = enabled, 1 = disabled)
+			; "   5:0 = not used
+BEEPER	= $f9		;Bell enable flag (bit 7: 0 = enabled, 1 = disabled)
+FREKFA	= $fa		;Unused (NOTE: altered by CINT and SWAPPER)
+FREKZP	= $fb		;Free zero page reserved for applications software ($fb-$fe, 4 bytes)
+LOFBUF	= $ff		;[BASZPT] Part of the work area for floating point to string conversion (used by FOUT)
+
+;Above zero page
+S8502	= $0100		;System stack ($0100-$01ff, 256 bytes)
+FBUFFR	= $0100		;Work area for floating point to string conversion (used by FOUT) ($0100-$010a, 11 bytes)
+BAD	= $0100		;Tape error log ($0100-$013d, 62 bytes)
+			;Assembly area for disk boot command ($0100-$010c, 13 bytes)
+XCNT	= $0110		;DOS loop counter / DOS command work area ($0110-$0122, 19 bytes)
+BNR	= $0123		;PRINT USING work area ($0123-$136, 14 bytes)
+FLAG	= $0126		;Command type indicator for PLAY processing
+SYSSTK	= $0137		;Stack space used by BASIC ($0137-$01fb, 197 bytes)
+			;The BASIC cold-start routine [$4023] resets the stack pointer to $fb,
+			;so locations $01fc-$01ff are not used by BASIC. The CLR routine
+			;[$51f8], also part of NEW and RUN, resets the stack pointer to $fa
+BUF	= $0200		;BASIC and Monitor input buffer (BASIC Line Editor Input Buffer) ($0200-$02a0, 161 bytes)
+FREK02	= $02a1		;Unused
+
+;Kernal indirect routines
+FETCH	= $02a2		;Retrieve a value from any bank (FETVEC = pointer, x = bank, y = offset, result -> a)
+FETVEC	= $02aa		;Address of the zero-page pointer used by FETCH routine
+STASH	= $02af		;Store a value in any bank (STAVEC = pointer, a = value, x = bank, y = offset)
+STAVEC	= $02b9		;Address of the zero-page pointer used by STASH routine
+CMPARE	= $02be		;Compare accumulator contents against a value from any bank
+			;(CMPVEC = pointer, a = value, x = bank, y = offset)
+CMPVEC	= $02c8		;Address of the zero-page pointer used by CMPARE routine
+JSRFAR0 = $02cd		;Call a subroutine in any bank (preparation: BANK, PC_HI, PC_LO)
+			;(system is always reconfigured for BANK 15 upon exit)
+JMPFAR0 = $02e3		;Jump to a routine in any bank (preparation: BANK, PC_HI, PC_LO)
+
+; --------------------
+; - Indirect vectors
+; --------------------
+
+;BASIC vectors
+ESCFNV	= $02fc		;[$4c78] [ESC_FN_VEC] Indirect vector in extended function execution routine
+BNKVEC	= $02fe		;[$ffff] Reserved indirect vector (not used by system ROM routines)
+IERROR	= $0300		;[$4d3f] Indirect vector for BASIC error handling routine
+IMAIN	= $0302		;[$4dc6] Indirect vector in Main BASIC Loop
+ICRNCH	= $0304		;[$430d] Indirect vector in BASIC tokenization routine
+IQPLOP	= $0306		;[$5151] Indirect vector in BASIC detokenization routine
+IGONE	= $0308		;[$4aa2] Indirect vector in BASIC execution routine
+IEVAL	= $030a		;[$78da] Indirect vector in BASIC evaluation routine
+ICRNCH2	= $030c		;[$4321] [IESCLK] Indirect vector for tokenizing additional keywords
+IQPLOP2	= $030e		;[$51cd] [IESCPR] Indirect vector for detokenizing additional keywords
+IGONE2	= $0310		;[$4ba9] [IESCEX] Indirect vector in extended statement execution subroutine
+FREK312	= $0312		;Unused (2 bytes) (NOTE: unaltered by INIVEC)
+
+;Kernal vectors
+IIRQ	= $0314		;[$fa65] Indirect vector to IRQ interrupt handling routine
+IBRK	= $0316		;[$b003] Indirect vector to BRK instruction handling (default = M/L monitor)
+INMI	= $0318		;[$fa40] Indirect vector to NMI interrupt handling routine
+IOPEN	= $031a		;[$efbd] Indirect vector to Kernal OPEN routine
+ICLOSE	= $031c		;[$f188] Indirect vector to Kernal CLOSE routine
+ICHKIN	= $031e		;[$f106] Indirect vector to Kernal CHKIN routine
+ICKOUT	= $0320		;[$f14c] Indirect vector to Kernal CKOUT routine
+ICLRCH	= $0322		;[$f226] Indirect vector to Kernal CLRCH routine
+IBASIN	= $0324		;[$ef06] Indirect vector to Kernal BASIN routine
+IBSOUT	= $0326		;[$ef79] Indirect vector to Kernal BSOUT routine
+ISTOP	= $0328		;[$f66e] Indirect vector to Kernal STOP routine
+IGETIN	= $032a		;[$eeeb] Indirect vector to Kernal GETIN routine
+ICLALL	= $032c		;[$f222] Indirect vector to Kernal CLALL routine
+IEXMON	= $032e		;[$b006] Indirect vector in Monitor command execution routine
+ILOAD	= $0330		;[$f26c] Indirect vector in Kernal LOAD routine
+ISAVE	= $0332		;[$c7b9] Indirect vector in Kernal SAVE routine
+
+;Screen editor vectors
+CTLVEC	= $0334		;[$c7b9] Indirect vector in screen BSOUT handling
+SHFVEC	= $0336		;[$c805] Indirect vector in screen BSOUT handling
+ESCVEC	= $0338		;[$c9c1] Indirect vector in ESC sequence handling routine
+KEYVEC	= $033a		;[$c5e1] Indirect vector in keyboard scanning routine
+KEYCHK	= $033c		;[$c6ad] Indirect vector in keyboard scanning routine
+
+;Screen editor tables
+DECODE	= $033e		;Keyboard table pointers ($033e-$0349, 12 bytes)
+KEYBUF	= $034a		;Keyboard buffer ($034a-$0353, 10 bytes)
+TABMAP	= $0354		;Tab stop bitmap ($0354-$035d, 10 bytes)
+LNKMAP	= $035e		;Line link bitmap ($035e-$0361, 4 bytes)
+
+;Kernal file tables
+LATBL	= $0362		;Logical file number table for currently open files (10 bytes)
+DNTBL	= $036c		;Device number table for currently open files (10 bytes)
+SATBL	= $0376		;Secondary address table for currently open files (10 bytes)
+
+; --------------------
+; - BASIC storage
+; --------------------
+
+;BASIC indirect routines
+CHRGET	= $0380		;Increment TXTPTR and get the next BASIC text character
+			;(results: a = next char, x = unaltered, y = 0)
+CHRGOT	= $0386		;Read the current BASIC text character, without updating TXTPTR
+QNUM	= $0390		;Query number routine (carry is cleared if the character is an ASCII digit 0-9)
+INDSUB0	= $039f 	;[INDSUB_RAM0] Indirect fetch from RAM 0 (a = address of zero-page pointer, y = offset)
+INDSUB1	= $03ab	 	;[INDSUB_RAM1] Indirect fetch from RAM 1 (a = address of zero-page pointer, y = offset)
+INDIN1	= $03b7		;[INDIN1_RAM1] Indirect fetch from RAM 1 (INDEX1 = pointer, y = offset)
+INDIN2	= $03c0		;Indirect fetch from RAM 0 (INDEX2 = pointer, y = offset)
+INDTXT	= $03c9		;Indirect fetch from RAM 0 (TXTPTR = pointer, y = offset)
+
+;BASIC working storage
+ZERO	= $03d2		;Null descriptor (3 bytes) (default = $00, $00, $00)
+CURBANK	= $03d5		;[CURRENT_BANK] Bank number for BASIC operations (default = 15)
+TMPDES	= $03d6		;Pointers for INSTR evaluation (4 bytes)
+FINBANK	= $03da		;[FIN_BANK] String block flag (used by FIN)
+SAVSIZ	= $03db		;SSHAPE temporary storage for data (4 bytes)
+BITS	= $03df		;Floating point overflow byte
+SPRTMP	= $03e0		;SPRSAV temporary pointer storage
+FG_BG	= $03e2		;Standard bitmap color fill value (used by SCNCLR)
+			;bits 7:4 = foreground color
+			;bits 3:0 = background color
+FG_JMC1	= $03e3		;Multicolor bitmap color fill value (used by SCNCLR)
+			;bits 7:4 = color source 1
+			;bits 3:0 = color source 2
+FREK3E4	= $03e4		;Unused (12 bytes)
+DO_DMA	= $03f0		;RAM-resident portion of DMA_CALL routine (13 bytes)
+FREK3FD	= $03fd		;Unused (3 bytes)
+VICSCN	= $0400		;VIC-II 40-column default text screen memory ($0400-$07e7, 1000 bytes)
+FREK07	= $07e8		;Unused (16 bytes)
+SPRPTR	= $07f8		;Sprite definition pointers ($07f8-$07ff, 8 bytes)
+STKTOP	= $0800		;BASIC Runtime Stack ($0800-$09ff, 512 bytes)
+SYSVEC	= $0a00		;[SYSTEM_VECTOR] BASIC restart vector (init value = $4000, then $4003)
+DEJAVU	= $0a02		;Memory initialization status flag ($a5 = RAMTAS performed)
+PALNTS	= $0a03		;PAL/NTSC systems flag ($00 = NTSC, $ff = PAL)
+INITST	= $0a04		;[INIT_STATUS] System initialization status flag (set = done)
+			;bits	7 = VDC character set (copy from ROM into VDC private RAM)
+			; "	6 = Keyboard Table Pointers and Function Key definitions
+			; "   5:1 = not used
+			; "	0 = cold start
+MEMSTR	= $0a05		;Pointer to the Start of user memory (in block 0 RAM) (default = $1c00)
+MEMSIZ	= $0a07		;Pointer to the End of user memory (+1) (in block 0 RAM) (default = $ff00)
+IRQTMP	= $0a09		;Temporary storage for IIRQ vector during tape operations (2 bytes)
+CASTON	= $0a0b		;CIA #1 control register A log
+KIKA26	= $0a0c		;CIA #1 interrupt control register log
+STUPID	= $0a0d		;CIA #1 timer A status log
+TIMOUT	= $0a0e		;IEEE timeout flag (used by SETTMO routine)
+ENABL	= $0a0f		;RS-232 activity flag (in brackets: interrupt source)
+			;bits 7:5 = not used
+			; "	4 = waiting for start bit to be received (FLAG line)
+			; "   3:2 = not used
+			; "	1 = bits being received (timer B)
+			; "	0 = bits being transmitted (timer A)
+M51CTR	= $0a10		;RS-232 control register
+M51CDR	= $0a11		;RS-232 command register
+M51AJB	= $0a12		;RS-232 user baud rate factor (2 bytes)
+RSSTAT	= $0a14		;RS-232 status register
+BITNUM	= $0a15		;RS-232 bit count
+BAUDOF	= $0a16		;RS-232 baud-rate timing constant (2 bytes)
+RIDBE	= $0a18		;Index to first character in RS-232 input buffer
+RIDBS	= $0a19		;Index to last character in RS-232 input buffer
+RODBS	= $0a1a		;Index to first character in RS-232 output buffer
+RODBE	= $0a1b		;Index to last character in RS-232 output buffer
+SERIAL	= $0a1c		;Fast serial mode flag
+			;bits	7 = the external device is capable of fast transmission and reception
+			; "	6 = the system is capable of high-speed burst mode loading
+			; "   5:0 = not used
+TIMER	= $0a1d		;Software jiffy timer (used by SLEEP routine) (3 bytes)
+XMAX	= $0a20		;Maximum number of keys in the keyboard buffer (default = $0a)
+PAUSE	= $0a21		;Scroll pause flag (used by BSOUT and SCNKEY routines) (nonzero = pause)
+RPTFLG	= $0a22		;Keyboard repeat flags (0 = only cursor, space, and INST/DEL repeating)
+			;bits	7 = all keys repeat (default = 1)
+			; "	6 = no keys repeat
+			; "   5:0 = not used
+KOUNT	= $0a23		;Delay before other than first repeat of key (start value = 4)
+DELAY	= $0a24		;Delay before first repeat of key (start value = 16)
+LSTSHF	= $0a25		;Delay between case-switching repeats (init value = $80)
+BLNON	= $0a26		;Cursor blink flag (40-column screen)
+			;bits	7 = blink phase (default = 0)
+			; "	6 = cursor mode (0 = blinking at a rate determined by BLNCT (default), 1 = solid)
+			; "   5:0 = not used
+BLNSW	= $0a27		;Cursor enable flag (40-column screen) (0 = enabled (default), nonzero = disabled)
+BLNCT	= $0a28		;Cursor blink countdown (40-column screen) (init value = $80)
+GDBLN	= $0a29		;Character under cursor (40-column screen)
+GDCOL	= $0a2a		;Color under cursor (40-column screen)
+CURMOD	= $0a2b		;VDC cursor mode
+VM1	= $0a2c		;VIC text screen and character base (shadow for the VIC register $d018)
+VM2	= $0a2d		;VIC bitmap and video matrix base (shadow for the VIC register $d018) (default = $78)
+VM3	= $0a2e		;Starting page for VDC screen memory (default = $00)
+VM4	= $0a2f		;Starting page for VDC attribute memory (default = $08)
+LINTMP	= $0a30		;Ending row for screen input
+SAV80	= $0a31		;Temporary storage for 80-column memory manipulation (current row/column) (2 bytes)
+CURCOL	= $0a33		;Attribute of current cursor position
+SPLIT	= $0a34		;Scan line for screen split
+FNADRX	= $0a35		;Temporary storage for X register (used by FNADRY routine)
+PALCNT	= $0a36		;Jiffy clock compensation flag
+SPEED	= $0a37		;Temporary storage for clock rate register (during tape and serial bus operations)
+SPRENA	= $0a38		;[SPRITES] Temporary storage for sprite enable register (during I/O)
+BLANK	= $0a39		;[BLANKING] Temporary storage for VIC control register (during I/O)
+HOLDOFF	= $0a3a		;[HOLD_OFF] Custom mode flag (during I/O) (default = 0)
+LDTB1SA	= $0a3b		;[LDTB1_SA] Starting page for 40-column screen memory
+CLR_EA	= $0a3c		;Working pointer into 80-column memory (2 bytes)
+FREKA3E	= $0a3e		;Unused (2 bytes)
+SWAPOUT	= $0a40		;Screen Editor variable storage for the inactive screen ($0a40-$0a5a, 27 bytes)
+FREKA5B	= $0a5b		;Unused (5 bytes)
+SWAPMAP	= $0a60		;Storage for inactive tab-stop bitmap (10 bytes)
+SWAPLNK	= $0a6a		;Storage for inactive line-link bitmap (4 bytes)
+FREKA6E	= $0a6e		;Unused ($0a6e-$0a7f, 18 bytes)
+FNBUFF	= $0a80 	;Monitor: Filename buffer for load, save, or verify ($0a80-$0a8f, 16 bytes)
+HBUFF	= $0a80		;Monitor: Search pattern buffer ($0a80-$0a9f, 32 bytes)
+XFORM	= $0aa0		;Monitor: Working storage for base conversion ($0aa0-$0aa7, 8 bytes)
+ASMBUF	= $0aa0		;Monitor: Instruction assembly buffer ($0aa0-$0aa9, 10 bytes)
+FORMAT	= $0aaa		;Monitor: Instruction format flag
+LENGTH	= $0aab		;Monitor: Instruction length
+MSAL	= $0aac		;Monitor: Three-character mnemonic pattern ($0aac-$0aae, 3 bytes)
+SXREG	= $0aaf		;Monitor: Temporary storage for X register
+FREKAB0	= $0ab0		;Unused
+OPCODE	= $0ab1		;Monitor: Calculated opcode
+MXSAVE	= $0ab2 	;Monitor: [XSAVE] Temporary storage for X register
+DIRFLG	= $0ab3		;Monitor: [DIRECTION] Transfer direction flag
+MCOUNT	= $0ab4		;Monitor: [COUNT] Digit counter
+NUMBER	= $0ab5		;Monitor: Temporary storage for parameter conversion
+SHIFT	= $0ab6		;Monitor: Number of bits per digit for base
+TEMPS	= $0ab7		;Monitor: temporary storage ($0ab7-$0ab9, 3 bytes)
+FREKABA	= $0aba		;Unused (6 bytes)
+CURBNK	= $0ac0		;Counter for function ROM testing
+PAT	= $0ac1		;Table of identifiers for function ROMs (4 bytes)
+DK_FLAG	= $0ac5		;Reserved for foreign screen editors (altered by CINT)
+FREKAC6	= $0ac6		;Unused (Reserved for system use) ($0ac6-$0aff, 58 bytes)
+TBUFFR	= $0b00		;Cassette buffer ($b00-$bbf, 192 bytes)
+			;Disk boot buffer ($b00-$bff, 256 bytes)
+RS232I	= $0c00		;RS-232 input buffer ($c00-$cff, 256 bytes)
+RS232O	= $0d00		;RS-232 output buffer ($d00-$dff, 256 bytes)
+SPRBASE	= $0e00		;[SPRITE_BASE] Sprite definition area ($0e00-$0fff, 512 bytes)
+PKYBUF	= $1000		;Programmable Function Key lengths ($1000-$1009, 10 bytes)
+PKYDEF	= $100a		;Programmable Function Key strings ($100a-$10ff, 246 bytes)
+DOSSTR	= $1100		;DOS command assembly area ($1100-$1130, 49 bytes)
+TRCFLG	= $116f		;Trace mode flag
+RENTMP	= $1170		;[RENUM_TMPS] Working storage for RENUMBER (4 bytes)
+T3	= $1174		;Loop counter for reading directory entries
+T4	= $1175	 	;Block count for directory entry (2 bytes)
+ADRAY1	= $117a		;Pointer to floating-point-to-integer conversion routine
+ADRAY2	= $117c		;Pointer to integer-to-floating-point conversion routine
+SPRDATA	= $117e		;[SPRITE_DATA] Sprite movement control data ($117e-$11d5, 88 bytes)
+VICSAVE	= $11d6		;[VIC_SAVE] Shadows for VIC sprite position registers ($11d6-$11e6, 17 bytes)
+VICSAV1	= $11e7		;Shadows for VIC sprite-collision registers (2 bytes)
+VICSAV2	= $11e9		;Shadow for VIC light pen registers (2 bytes)
+DOSSA	= $11ed		;Channel number for BASIC relative file operations
+FREK11	= $11ee		;Unused ($11ee-$11ff, 18 bytes)
+OLDLIN	= $1200		;Line number where program stopped (2 bytes)
+OLDTXT	= $1202		;Pointer to the Address of the Current BASIC Statement
+PUCHRS	= $1204		;Character definitions for PRINT USING ($1204-$1207, 4 bytes)
+ERRNUM	= $1208		;Number of most recent error ($ff = no errors)
+ERRLIN	= $1209		;Line number where most recent error occurred (LSB/MSB)
+TRAPNO	= $120b		;Target line number for TRAP statement (2 bytes)
+TMPTRP	= $120d		;Temporary storage for high byte of TRAP line number
+ERRTXT	= $120e		;Pointer to start of statement where last error occurred
+TXTTOP	= $1210		;[TEXT_TOP] Pointer to the end of current BASIC program (+1)
+MAXMEM0	= $1212		;[MAX_MEM_0] Top of memory (+1) reserved for BASIC program in RAM 0 (default = $ff00)
+			;(after changing the value here, no further action is required)
+TMPTXT	= $1214		;Temporary text pointer storage for DO
+TMPLIN	= $1216		;Temporary line number storage for DO (2 bytes)
+USRPOK	= $1218		;USR function jump vector (3 bytes)
+RNDX	= $121b		;Random number seed value (5 bytes)
+DEJAVU1	= $1221		;COLD or WARM reset status (not used by any ROM routine)
+TEMPO	= $1222		;[TEMPO_RATE] Tempo setting for PLAY statement
+VOICES	= $1223		;Durations for currently active notes (6 bytes)
+NTIME	= $1229		;Duration of current note (2 bytes)
+OCTAVE	= $122b		;Octave for current note
+SHARP	= $122c		;Sharp/flat flag
+PITCH	= $122d		;Frequency for current note (2 bytes)
+VOICE	= $122f		;Voice number for current note
+WAVE	= $1230		;Waveforms for current notes (3 bytes)
+DNOTE	= $1233		;Dotted-note flag
+FILTSAV	= $1234	 	;Temporary storage for filter parameters (4 bytes)
+FLTFLG	= $1238		;Filter type index
+NIBBLE	= $1239		;Temporary storage (used by FILTER and ENVELOPE routines)
+TONNUM	= $123a		;Current instrument number
+TONVAL	= $123b		;Envelope parameters for current instrument (3 bytes)
+PARCNT	= $123e		;Index into instrument table for current instrument
+ATKTAB	= $123f		;Instrument parameter tables (32 bytes)
+FILTERS	= $1271		;Current filter cutoff frequency (2 bytes)
+FILTER1	= $1273		;Current filter control and resonance setting
+FILTER2	= $1274		;Current filter type selection
+FILTER3	= $1275		;Current SID chip volume setting
+INTTRIP	= $1276		;[INT_TRIP_FLAG] Collision flags (3 bytes)
+INTADR	= $1279		;[INT_ADR] Target line numbers for COLLISION (6 bytes)
+INTVAL	= $127f		;Collision enable flag
+COLTYP	= $1280		;Collision type index
+SOUNDV	= $1281		;[SOUND_VOICE] Voice for current SOUND statement
+SOUNDT	= $1282		;[SOUND_TIME] Table of SOUND statement settings (33 bytes)
+TMPTIME	= $12a3		;[TEMP_TIME] Parameters for most recent SOUND statement (14 bytes)
+POTTMP1	= $12b1		;[POT_TEMP_1] Temporary storage for POT and PEN routines
+POTTMP2	= $12b2 	;[POT_TEMP_2] Temporary storage for POT routine
+WINTMP	= $12b3		;[WINDOW_TEMPS] Temporary parameter storage for WINDOW statement (4 bytes)
+DBUFFR	= $12b7		;Filename buffer for DOS support commands (used by SCRATCH and RENAME) ($12b7-$12c6, 16 bytes)
+SAVRAM	= $12b7		;Sprite pattern storage (used by SPRDEF and SPRSAV) ($12b7-$12f5, 63 bytes)
+SPRSIZ	= $12f6		;Sprite pattern suffix (x,y size) (used by SPRSAV) (4 bytes)
+DEFMOD	= $12fa		;Sprite mode indicator for SPRDEF
+LINCNT	= $12fb		;Sprite pattern line count for SPRDEF
+SPRNUM	= $12fc 	;[SPRITE_NUMBER] Sprite number for SPRDEF
+IRQFLG	= $12fd		;[IRQ_WRAP_FLAG] BASIC IRQ activity flag
+FREK12	= $12fe		;Unused (2 bytes)
+FREK13	= $1300		;Application Program Area ($1300-$lbff, 2304 bytes)
+RAMBOT	= $1c00		;Start of BASIC Program Text (RAM 0) ($4000, with graphics area allocated)
+			;(first byte must be $00 for BASIC to work, program actually begins the next byte)
+RAMTOP	= $ff00		;End of BASIC Program Text (RAM 0) (+1)
+
+; --------------------
+; - Graphics storage
+; --------------------
+
+;Common variables
+VWORK	= $1131		;Base address (all coords, sizes and angles are stored in LSB/MSB format)
+XPOS	= $1131		;Current x-coord
+YPOS	= $1133		;Current y-coord
+XDEST	= $1135		;Destination x-coord
+YDEST	= $1137		;Destination y-coord
+XABS	= $1139		;Absolute value of x-coord
+YABS	= $113b		;Absolute value of y-coord
+XSGN	= $113d		;Sign of x-coord
+YSGN	= $113f		;Sign of y-coord
+SCALEM	= $116a		;Scale mode flag (0 = not active, nonzero = active)
+WIDTH	= $116b		;Line width for bitmapped graphics routines (0 = single, nonzero = double)
+BITMSK	= $116d		;Bit mask value (used by GPLOT, READPT and SPRDEF routines)
+VTEMP3	= $1177		;Working storage for graphics parameter scaling
+VTEMP4	= $1178		;Working storage for graphics parameter evaluation
+VTEMP5	= $1179		;Working storage for graphics parameter evaluation
+
+;Angle variables
+ANGSGN	= $1149		;Sign of angle
+SINVAL	= $114a		;Sine of value of angle
+COSVAL	= $114c		;Cosine of value of angle
+ANGCNT	= $114e		;Temps for angle distance routines
+
+;DRAWLN variables
+FCT	= $1141		;Factor
+ERRVAL	= $1145		;Error
+LESSER	= $1147		;Index to smaller delta
+GREATR	= $1148		;Index to greater delta
+
+;BOX variables
+XCORDl	= $1150		;Current x-coord
+YCORDl	= $1152		;Current y-coord
+BOXANG	= $1154		;Rotation angle
+XCORD2	= $115c		;Destination x-coord
+YCORD2	= $115e		;Destination y-coord
+FILFLG	= $116c		;Fill flag
+
+;CIRCLE variables
+XCIRCL	= $1150		;Center x-coord
+YCIRCL	= $1152		;Center y-coord
+XRADUS	= $1154		;x-radius
+YRADUS	= $1156		;y-radius
+ROTANG	= $1158		;Rotation angle
+ANGBEG	= $115c		;Arc angle start
+ANGEND	= $115e		;Arc angle end
+XRCOS	= $1160		;x-radius * cos(ROTANG)
+YRSIN	= $1162		;y-radius * sin(ROTANG)
+XRSIN	= $1164		;x-radius * sin(ROTANG)
+YRCOS	= $1166		;y-radius * cos(ROTANG)
+CIRSEG	= $1220		;[CIRCLE_SEGMENT] Degrees between segments for CIRCLE routine (default = 2)
+
+;CHAR variables
+CHRREV	= $113d		;Reverse flag (bit 7)
+COLCNT	= $115e		;Column counter
+ROWCNT	= $115f		;Row counter
+STRCNT	= $1160		;String counter
+CHRPAG	= $1168		;Starting page for character pattern definitions
+NUMCNT	= $116e		;String length (used by CHAR, MOVSPR, and SPRDEF routines)
+CHRLO	= $11eb		;[UPPER-LOWER] Starting page for alternate character set during CHAR
+CHRUP	= $11ec		;[UPPER-GRAPHIC] Starting page for default character set during CHAR
+
+;GSHAPE/SSHAPE variables
+STRSZ	= $1153		;String length
+GETTYP	= $1154		;Replace mode
+STRPTR	= $1155		;String counter
+OLDBYT	= $1156		;Old bitmap byte
+NEWBYT	= $1157		;New string or bitmap byte
+XSIZE	= $1159		;Horizontal size (-1)
+YSIZE	= $115b		;Vertical size (-1)
+XSAVE	= $115d		;Temp for column length (2 bytes)
+STRADR	= $115f		;String descriptor address
+BITIDX	= $1161		;Bit index into byte
+BITCNT	= $1169		;Bit counter
+
+; --------------------
+; - BASIC routines
+; --------------------
+
+;BASIC Low ROM
+COLDST	= $4000		;BASIC cold start (HARD_RESET -> $4023)
+WARMST	= $4003		;BASIC warm start (SOFT_RESET -> $4009)
+BASIRQ	= $4006		;BASIC IRQ entry (BASIC_IRQ -> $a84d)
+INIVEC	= $4251		;[INIT_VECTORS] Initialize BASIC indirect vectors
+CRUNCH	= $430a		;Tokenize keywords in lines of BASIC Program Text (through ICRNCH vector)
+NCRNCH	= $430d		;Tokenize keywords in lines of BASIC Program Text (no vector)
+GONE	= $4a9f		;Execute next statement (through IGONE vector)
+NGONE	= $4aa2		;Execute next statement (no vector)
+NEWSTT	= $4af6		;Set up next statement for execution (BASIC Interpreter Loop)
+XEQCM3	= $4b3f		;Execute current statement
+CHKSTP	= $4bb5		;[IS_STOP_KEY_DOWN] Test for RUN/STOP keypress (zero clear if it is not depressed)
+OMERR	= $4d3a		;Display an OUT OF MEMORY error message
+ERROR	= $4d3c		;ERROR message handler (through IERROR vector)
+NERROR	= $4d3f		;ERROR message handler (no vector)
+READY	= $4d37		;Display READY message, then fall into Main BASIC Loop
+MAIN	= $4dc3		;Handle immediate mode and program line entry (through IMAIN vector)
+NMAIN	= $4dc6		;Handle immediate mode and program line entry (no vector)
+MAIN1	= $4de2		;Add or delete BASIC program lines
+INLIN	= $4f93		;Read a line of input into the buffer
+LINGET	= $50a0		;Create an integer value from a character string
+			;(carry must be clear, a = first digit, TXTPTR -> next digit, result -> LINNUM, LSB/MSB)
+NEW	= $51d6		;NEW command (checking zero terminator)
+SCRTCH	= $51d9		;Perform NEW (then a jump to READY is required to return to BASIC)
+CLEAR	= $51f8		;CLR command (checking zero terminator)	
+CLEARC	= $51fa		;Perform CLR (then a jump to READY is required to return to BASIC)
+DATA	= $528f		;DATA statement: skip text until a chain flag (colon ':' = $3a) or an end of line flag ($00)
+REM	= $529d		;REM statement: skip text until an end of line flag ($00)
+FNBEND	= $5320		;[FIND_BEND] Subroutine to find end of current b-block
+COPY	= $5494		;Create a copy of a string pointed by FACMO then free it with FRETMS, if it is a temp
+GOCR	= $5598		;Print a carriage return (if logical file number > 127, also print a line feed)
+STROUT	= $55e2		;Print string in a/y (last printed char -> a, printed chars -> y)
+			;(NOTE: the string must be located in RAM block 0)
+INPCON	= $56b0		;Common input routine
+AUTO	= $5975		;AUTO command
+HELP	= $5986		;HELP command
+GOTO	= $59db		;GOTO statement (carry must be clear, a = first digit, TXTPTR -> next digit) (uses LINGET)
+PAINT	= $61a8		;PAINT command
+PAINT2	= $61bd		;PAINT routine (x = mode flag)
+PTLOOP	= $61eb		;PAINT loop
+TSTVAL	= $627c		;Test value of position (PAINT subroutine)
+BOX	= $62b7		;BOX command
+BOX05	= $62d7		;BOX routine (x = fill flag)
+BOXSUB	= $6389		;BOX subroutine
+CIRCLE	= $668e		;CIRCLE command
+CIRC40	= $6725		;CIRCLE routine
+CIRSUB	= $6750		;CIRCLE subroutine
+SCNCLR	= $6a79		;SCNCLR command
+DRAW	= $6797		;DRAW command
+LOCATE	= $6955		;LOCATE command
+CLRPOS	= $6ad3		;Move current coords to top left position (XPOS,YPOS -> 0,0)
+CLEAR80	= $6ade		;[CLEAR_80] Clear the 80-column text screen (keeping current screen mode)
+CLEAR40	= $6af2		;[CLEAR_40] Clear the 40-column text screen (keeping current screen mode)
+GRAPHIC	= $6b5a		;GRAPHIC command
+FAST	= $77b3		;Set clock frequency to 2 MHz
+SLOW	= $77c4		;Set clock frequency to 1 MHz
+CHKNUM	= $77da		;CHecK for NUMeric
+CHKSTR	= $77dd		;CHecK for STRing
+TMERR	= $77e7		;Generate a 'TYPE MISMATCH' error
+FRMEVL	= $77ef		;(FoRMula EVaLuation) Evaluate an expression and return value in FAC#1 
+EVAL	= $78d7		;Evaluate a single term of a numeric expression and return value in FAC#1 (through IEVAL vector)
+NEVAL	= $78da		;Evaluate a single term of a numeric expression and return value in FAC#1 (no vector)
+GIVAYF	= $793c		;Convert 16-bit signed integer to floating point (a/y = MSB/LSB, result in FAC#1)
+PARCHK	= $7950		;Evaluate expression within parentheses
+CHKCOM	= $795c		;Check for a comma (if not found generate a 'SYNTAX ERROR')
+SYNCHR	= $795e		;Compare accumulator with current character
+SNERR	= $796c		;Generate a 'SYNTAX ERROR'
+MOVFRM	= $7a85		;Move (unpack) RAM to FAC#1 (address = y:a)
+PTRGET	= $7aaf		;(PoinTeR GET) Find or create a variable, results:
+			;VALTYP: $00 = numeric		$ff = string
+			;INTFLG: $00 = floating point	$80 = integer
+			;SUBFLG: $00 = any type		$80 = subscripted (array)
+			;VARNAM: variable name (2 chars)
+			;VARPNT: pointer to variable descriptor (also in a/y)
+IQERR	= $7d28		;Generate an 'ILLEGAL QUANTITY' error
+
+;BASIC High ROM
+FRE	= $8000		;FRE function
+FRE0	= $800c		;FRE(0) (result in FAC#1)
+FRE1	= $803a		;FRE(1) (result in FAC#1)
+RGR	= $8182		;RGR function
+RCLR	= $819b		;RCLR function
+RWINDOW = $8407		;RWINDOW function
+NOSFLT	= $84c9		;[GIVAYF1] Convert 16-bit unsigned integer to floating point (a/y = MSB/LSB, result in FAC#1)
+POS	= $84d0		;POS function
+SNGFLT	= $84d4		;Convert a 1-byte value in y to a floating point in FAC#1
+STOINT	= $84e5		;[GIVAYF2] Set up parameters to convert 16-bit integer to floating point (a/y = MSB/LSB)
+			;(results: x = exponent to 2^16 ($90), FACHO/FACHO+1 = MSB/LSB)
+STRSPA	= $8690		;Allocate space in string memory for data and create a temp descriptor in DSCTMP
+			;(input: a = length, output: a = length, x/y = string address)
+PUTNEW	= $86e3		;Store a temp descriptor (DSCTMP) in temporary string descriptor stack (TEMPST)
+			;then put a pointer to the descriptor in FACMO and flag the result as type string
+FRESTR	= $877b		;Evaluate a string parameter (length -> a, address -> x:y and INDEX1)
+FRETMS	= $87e0		;Remove a string from temporary descriptor stack (TEMPST) (a/y = descriptor address)
+GTBYTC	= $87f1		;[GETBYTC] Get the next character then continue with GETBYT
+GETBYT	= $87f4		;[CONVASCN] Get a 1-byte value in x
+			;(if not found generate an 'ILLEGAL QUANTITY' error and exit)
+CONINT	= $87f7		;Convert FAC#1 to a 1-byte value in x
+GETNUM	= $8803		;[GETADR] Evaluate parameters for POKE or WAIT (GETWRD -> GETADR -> COMBYT)
+COMBYT	= $8809		;Check for a comma and get a 1-byte value in x
+COMWRD	= $880f		;[COMADR] Check for a comma then continue with GETWRD
+GETWRD	= $8812		;Get a floating point number in FAC#1 then continue with GETADR
+GETADR	= $8815		;[GETADDRESS] Convert FAC#1 into a 2-byte unsigned integer
+			;and return value in a/y (MSB/LSB) and LINNUM (LSB/MSB)
+FADD2	= $88dd		;FAC#1 = FAC#1 + FAC#2
+ROMUPK	= $8a89		;Move (unpack) ROM to FAC#2 (address = y:a)
+CONUPK	= $8ab4		;Move (unpack) RAM to FAC#2 (address = y:a)
+MOVFM	= $8bd4		;Move (unpack) ROM to FAC#1 (address = y:a)
+MOV2F	= $8bf9		;Move (pack) FAC#1 to TEMPF2
+MOV1F	= $8bfc		;Move (pack) FAC#1 to TEMPF1
+MOVMF	= $8c00		;Move (pack) FAC#1 to memory (address = y:x)
+MOVFA	= $8c28		;Move FAC#2 to FAC#1
+MOVAF	= $8c38		;Move FAC#1 to FAC#2
+FLOATS	= $8c70		;Convert 16-bit signed integer to floating point (FACHO/FACHO+1 = MSB/LSB, result in FAC#1)
+FLOATC	= $8c75		;Convert 16-bit unsigned integer to floating point (FACHO/FACHO+1 = MSB/LSB, result in FAC#1)
+QINT	= $8cc7		;Convert FAC#1 to a four-byte integer (result in FACHO with the most significant byte first)
+FIN	= $8d22		;[ASCFPN] Generate a floating point value representing a character string (result in FAC#1)
+INPRT	= $8e26		;Print " IN " then continue with CURPRT
+CURPRT	= $8e2e		;Print current BASIC line
+LINPRT	= $8e32		;Print a 16-bit unsigned integer in a/x (MSB/LSB) (printed chars -> y)
+FACPRT	= $8e3c		;Print a floating point value stored in FAC#1 (part of LINPRT routine)
+FOUT	= $8e42		;Convert the contents of FAC#1 into an ASCII string (result in FBUFFR)
+FOUTC	= $8e44		;Convert the contents of FAC#1 into an ASCII string (result in FBUFFR) (without initial space)
+CLOAD	= $912c		;LOAD command (then parse parameters)
+CLD10	= $9133		;LOAD entry from DLOAD (with parameters already set)
+PLSV	= $91ae		;Set parameters for LOAD, VERIFY, and SAVE
+GETSPA	= $9299		;Create space in the string pool for a temporary string (a = length)
+GARBA2	= $92ea		;Perform a Garbage collection on string pool
+GTANG1	= $9a77		;Get SIN and COS values in SINVAL and COSVAL
+ANGDST	= $9af3		;Get distance * angle
+RDOT	= $9b0c		;RDOT function
+DRAWLN	= $9b30		;Draw a straight line
+DLOOP	= $9ba5		;Draw line loop
+DRWINC	= $9bea		;Draw line subroutine
+GPLOT	= $9bfb		;Bitmapped point-plotting routine
+PLOT01	= $9c19		;Plot a pixel (ignoring double width mode)
+READPT	= $9c49		;Read the point at current position
+DOCOLR	= $9c70		;Set up color for 8x8 character cell (x = row number, y = column number)
+GETPOS	= $9ce3		;Get address in graphic bitmap (GRAPNT = address of current position)
+			;(x = bit offset into byte specified, y = offset to byte within 8x8 character cell)
+DIVPOS	= $9d24		;Check current position limits (XPOS,YPOS -> row,column (x,y), out of range -> carry set)
+SCALXY	= $9d4a		;Scale graphics parameters
+ADDTW2	= $9d70		;Add coordinates (result in a/y)
+SUBTWO	= $9d7c		;Subtract coordinates (result in a/y)
+ABSTWO	= $9d99		;Get absolute value of VWORK+y - VWORK+x
+			;(result in a/y, carry set if VWORK+y >= VWORK+x)
+DSTPOS	= $9df2		;Move destination coords to current (XDEST,YDEST -> XPOS,YPOS)
+DSTMOV	= $9df9		;Move a single destination coord to current (y = index)
+OPTWRD	= $9e06		;Get an optional 16 bit value into the accumulator and the y register (MSB/LSB) (default = 0)
+OPTZER	= $9e1c		;Get an optional 8 bit value in the x register (default = 0) (carry set = value found)
+OPTBYT	= $9e1e		;Get an optional 8 bit value in the x register (default = x) (carry set = value found)
+GRPCOL	= $9e2f		;Parse the graphics commands (CHKGRP -> INCOLR)
+INCOLR	= $9e32		;Get color source and save it in COLSEL
+INCOR2	= $9e52		;Get optional coords preceded by a comma (x = index) (default = current)
+INCOR3	= $9e6d		;Get non-optional coords preceded by a comma (x = index)
+INCORD	= $9e70		;Get non-optional coords (x = index)
+CHKGRP	= $a074		;[ISGRAP] Check if the graphics screen is allocated
+ERRLEN	= $a5ed		;Generate a 'STRING TOO LONG' error
+BANK15	= $a845		;Switch to BANK 15 configuration (a, x, y = preserved)
+
+;BASIC routines transferred to common RAM
+CHRGET_ROM  = $4279	;[$0380] Character get routine (31 bytes)
+INDSUB0_ROM = $4298	;[$039f] Indirect subroutine load from RAM 0 (12 bytes)
+INDSUB1_ROM = $42a4	;[$03ab] Indirect subroutine load from RAM 1 (12 bytes)
+INDIN1_ROM  = $42b0	;[$03b7] INDEX1 indirect fetch from RAM 1 (9 bytes)
+INDIN2_ROM  = $42b9	;[$03c0] INDEX2 indirect fetch from RAM 0 (9 bytes)
+INDTXT_ROM  = $42c2	;[$03c9] TXTPTR indirect fetch from RAM 0 (9 bytes)
+
+;BASIC tables
+MSKTBL	= $9d1c		;[RBITS] Mask table used by the graphics and sound routines
+			;($80,$40,$20,$10,$08,$04,$02,$01)
+VIC2RGB	= $6a4c		;[_8563_ADJUST] VIC-II to RGBI color code table
+RGB2VIC	= $81f3		;[_8563_UNADJUST] RGBI to VIC-II color code table
+
+; --------------------
+; - Editor routines
+; --------------------
+
+CLRSCN	= $c142		;Clear screen
+NEXTLIN	= $c363		;Move cursor to next line
+ESCCHR	= $c9be		;ESC sequence handler (through ESCVEC vector)
+ESCAPE	= $c9c1		;ESC sequence handler (no vector)
+
+;VDC routines
+WRITE80 = $cdca		;Write one byte to VDC chip memory (a = value) (a, y = preserved)
+WRTREG	= $cdcc		;Write one byte to an VDC chip register (a = value, x = register) (a, x, y = preserved)
+READ80	= $cdd8		;Read one byte from VDC chip memory (value -> a) (y = preserved)
+READREG	= $cdda		;Read one byte from a VDC chip register (x = register, value -> a) (x, y = preserved)
+
+;Editor tables
+LDTB2	= $c033		;Screen lines table (lo-byte)
+LDTB1	= $c04c		;Screen lines table (hi-byte)
+
+; --------------------
+; - VIC-II registers
+; --------------------
+
+RASTERH	= $d011		;[SCROLY] Vertical fine scrolling and control register
+			;bits	7 = High order bit (8) of raster compare register ($d012)
+			; "	6 = Enable extended color text mode (set = enabled)
+			; "	5 = Enable bitmap graphics mode (set = enabled)
+			; "	4 = Blank the entire screen to the same color as the border (clear = blank)
+			; "	3 = Select a 24-row or 25-row text display (set = 25 rows) (default = set)
+			; "   2:0 = Vertical fine scrolling (0-7) (default = 3)
+RASTERL	= $d012		;[VICREG18] Raster compare register (low order bits [7:0])
+SCROLX	= $d016		;[VICREG22] Horizontal fine scrolling and control register
+			;bits 7:6 = not used
+			; "	5 = Video chip reset (clear = normal operation, set = video completely off)
+			; "	4 = Enable multicolor text or multicolor bitmap mode (clear = off (default), set = on)
+			; "	3 = Select a 38-column or 40-column text display (set = 40 (default), clear = 38 columns)
+			; "   2:0 = Fine scroll display horizontally by X dot positions (0-7)
+EXTCOL	= $d020		;[VICREG32] Border color register
+BGCOL0	= $d021		;[VICREG33] Background color register
+XSCAN	= $d02f		;[VICREG47] Extended keyboard scan-line control register
+			;bits 7:3 = not used
+			; "   2:0 = keyboard columns containing the 24 additional keys of the C128
+CLKRT	= $d030		;[VICREG48] Processor clock rate control register
+			;bits 7:2 = not used
+			; "	1 = test bit (default = 0, setting this bit to 1 will blank the 40-column screen display)
+			; "	0 = processor clock speed (clear = 1 MHz, set = 2 MHz)
+VICCOL	= $d800		;VIC-II Color matrix, 1 KB ($d800-$dbff)
+
+; --------------------
+; - MMU registers
+; --------------------
+
+;Primary registers
+MMUCR1	= $d500		;Configuration register (default = $00, BANK 15)
+PCRA	= $d501		;Preconfiguration register A (default = $3f, BANK 0)
+PCRB	= $d502		;Preconfiguration register B (default = $7f, BANK 1)
+PCRC	= $d503		;Preconfiguration register C (default = $01, BANK 14)
+PCRD	= $d504		;Preconfiguration register D (default = $41, BANK 14 with RAM block 1)
+MMUMCR	= $d505		;Mode configuration register
+			;bits	7 = status of 40/80 display switch on keyboard (0 = 80, 1 = 40)
+			; "	6 = set of ROMs visible to the system (0 = C128, 1 = C64)
+			; "	5 = EXROM memory expansion port line
+			; "	4 = GAME memory expansion port line
+			; "	3 = direction of data flow on the fast serial bus (FSDIR)
+			; "   2:1 = not used
+			; "	0 = current CPU in control of the system (0 = Z80, 1 = 8502)
+MMURCR	= $d506		;RAM configuration register (default = 4, location = bottom, size = 1k)
+			;bits 7:6 VIC video bank location:
+			;		00	RAM block 0 (default)
+			;		01	RAM block 1
+			;		10	RAM block 2 (not available)
+			;		11	RAM block 3 (not available)
+			; "   5:4 not used
+			; "   3:2 common areas location:
+			;		00	no common RAM
+			;		01	common area at bottom of memory (default)
+			;		10	common area at top of memory
+			;		11	common areas at both top and bottom of memory
+			; "   1:0 common areas size:
+			;		00	1k (bottom = 0000-03ff, top = fc00-ffff) (default)
+			;		01	4k (bottom = 0000-0fff, top = f000-ffff)
+			;		10	8k (bottom = 0000-1fff, top = e000-ffff)
+			;		11	16k (bottom = 0000-3fff, top = c000-ffff)
+MMUP0L	= $d507		;Page 0 relocation (page pointer) (default = 0)
+MMUP0H	= $d508		;Page 0 relocation (bit 0 = RAM block) (default = 0)
+MMUP1L	= $d509		;Page 1 relocation (page pointer) (default = 0)
+MMUP1H	= $d50a		;Page 1 relocation (bit 0 = RAM block) (default = 0)
+MMUVER	= $d50b		;Version register (default = 4)
+			;bits 7:4	version of the MMU chip (default = 0)
+			; "   3:0	number of 64K blocks of RAM present in the system (default = 2)
+
+;Secondary registers
+MMUCR	= $ff00		;Configuration register (mirror of $d500)
+			;bits 7:6 = RAM block selection (Expansion RAM blocks 2 and 3 not implemented)
+			;		00 = System RAM block 0		01 = System RAM block 1
+			;		10 = Expansion RAM block 2	11 = Expansion RAM block 3
+			; "   5:4 = High space memory ($c000-$ffff)
+			;		00 = Kernal & Character ROM	01 = Internal Function ROM/H
+			;		10 = External Function ROM/H	11 = RAM (depending on bits 7:6)
+			; "   3:2 = Mid space memory ($8000-$bfff)
+			;		00 = BASIC High ROM & Monitor	01 = Internal Function ROM/L
+			;		10 = External Function ROM/L	11 = RAM (depending on bits 7:6)
+			; "	1 = Low space memory ($4000-$7fff)
+			;		0 = BASIC Low ROM		1 = RAM (depending on bits 7:6)
+			; "	0 = I/O space ($d000-$dfff) (overrides bits 5:4)
+			;		0 = I/O Registers		1 = RAM or ROM (depending on bits 5:4)
+
+;Load Configuration Registers (store any value to activate the corresponding Preconfiguration register)
+LCRA	= $ff01		;$3f = BANK  0	RAM block 0 ($0000-$ffff) no ROMs available
+LCRB	= $ff02		;$7f =  "    1	RAM  "    1 ($0000-$ffff) no ROMs available
+LCRC	= $ff03		;$01 =  "   14	RAM  "    0 ($0000-$3fff) System ROMs (I/O Registers not available)
+LCRD	= $ff04		;$41 = same as BANK 14, but with RAM from block 1 instead of 0
+
+;NOTE, in all banks:
+;Locations $00 and $01 are the 8502 Processor's on-chip I/O Port Direction and Data Registers
+;Locations $ff00-$ff04 are MMU Configuration Register and Load Configuration Registers
+
+;MMU register settings for standard banks (16 values)
+BANKT = [$3f,$7f,$bf,$ff,$16,$56,$96,$d6,$2a,$6a,$aa,$ea,$06,$0a,$01,$00]
+
+;Standard bank configurations:
+
+;BANK	value	bit values	memory layout
+;====	=====	==========	=============
+; 0	$3f	%00111111	;RAM 0 only
+; 1	$7f	%01111111	;RAM 1 only
+; 2	$bf	%10111111	;RAM 2 only (RAM 0 mirror)
+; 3	$ff	%11111111	;RAM 3 only (RAM 1 mirror)
+; 4	$16	%00010110	;int ROM, RAM 0, I/O
+; 5	$56	%01010110	;int ROM, RAM 1, I/O
+; 6	$96	%10010110	;int ROM, RAM 2, I/O
+; 7	$d6	%11010110	;int ROM, RAM 3, I/O
+; 8	$2a	%00101010	;ext ROM, RAM 0, I/O
+; 9	$6a	%01101010	;ext ROM, RAM 1, I/O
+;10	$aa	%10101010	;ext ROM, RAM 2, I/O
+;11	$ea	%11101010	;ext ROM, RAM 3, I/O
+;12	$06	%00000110	;KERNAL & int ROM-lo, RAM 0, I/O
+;13	$0a	%00001010	;KERNAL & ext ROM-lo, RAM 0, I/O
+;14	$01	%00000001	;KERNAL & BASIC, RAM 0, CHARROM
+;15	$00	%00000000	;KERNAL & BASIC, RAM 0, I/O
+
+; --------------------
+; - VDC registers
+; --------------------
+
+;External registers
+VDCADR	= $d600		;VDC Address/status register
+			;bits	7 = STATUS flag (clear = ready to read/write access)
+			; "	6 = LP flag (set = light pen latched)
+			; "	5 = VBLANK flag (set = raster scan is in its vertical blank period)
+			; "   4:3 = not used
+			; "   2:0 = version number of the VDC chip
+VDCDAT	= $d601		;VDC Data register
+
+;Internal registers
+vdc_HT		= $00	;[R00] HORIZONTAL TOTAL
+			;Total number of horizontal character positions (-1) (default = $7e, NTSC; $7f, PAL)
+vdc_HD		= $01	;[R01] HORIZONTAL DISPLAYED
+			;Number of visible horizontal character positions (default = $50)
+vdc_HSP		= $02	;[R02] HORIZONTAL SYNC POSITION
+			;Character position at which the vertical sync pulse begins (default = $66)
+vdc_SW		= $03	;[R03] VERTICAL/HORIZONTAL SYNC WIDTH
+			;bits 7:4 = vertical rasterlines (default = 4)
+			; "   3:0 = horizontal characters (+1) (default = 9)
+vdc_VT		= $04	;[R04] VERTICAL TOTAL
+			;Total number of screen rows (-1) (default = $20, NTSC; $26, PAL)
+vdc_VA		= $05	;[R05] VERTICAL TOTAL ADJUST
+			;bits 7:3 = not used
+			; "   4:0 = vertical fine adjustment (default = 0)
+vdc_VD		= $06	;[R06] VERTICAL DISPLAYED
+			;Number of visible screen rows (default = $19)
+vdc_VSP		= $07	;[R07] VERTICAL SYNC POSITION (default = $1d, NTSC; $20, PAL)
+			;Character position at which the vertical sync signal will be generated (+1)
+vdc_IM		= $08	;[R08] INTERLACE MODE
+			;bits 7:2 = not used
+			; "	1 = interlaced video (double height) (default = 0)
+			; "	0 = interlaced sync (double scan) (default = 0)
+vdc_CTV		= $09	;[R09] CHARACTER TOTAL VERTICAL
+			;bits 7:3 = not used
+			; "   4:0 = scan lines per character (-1) (default = 7)
+vdc_CS		= $0a	;[R10] CURSOR START SCAN LINE
+			;bits	7 = not used
+			; "   6:5 = cursor mode control
+			;	%00 = solid (nonblinking) cursor
+			;	%01 = no cursor
+			;	%10 = blinking at 1/16 screen refresh rate
+			;	%11 = blinking at 1/32 screen refresh rate (default = $60, slower)
+			; "   4:0 = top of cursor scan line (default = $00)
+vdc_CE		= $0b	;[R11] CURSOR END SCAN LINE
+			;bits 7:3 = not used
+			; "   4:0 = bottom of cursor scan line (default = $07)
+vdc_DAH		= $0c	;[R12] DISPLAY START ADDRESS HI
+			;Screen memory starting address (hi-byte) (default = $00)
+vdc_DAL		= $0d	;[R13] DISPLAY START ADDRESS LO
+			;Screen memory starting address (lo-byte) (default = $00)
+vdc_CPH		= $0e	;[R14] CURSOR POSITION HI
+			;Address of current cursor position (hi-byte)
+vdc_CPL		= $0f	;[R15] CURSOR POSITION LO
+			;Address of current cursor position (lo-byte)
+vdc_LPV		= $10	;[R16] LIGHT PEN VERTICAL
+			;Light pen vertical position
+vdc_LPH		= $11	;[R17] LIGHT PEN HORIZONTAL
+			;Light pen horizontal position
+vdc_UAH		= $12	;[R18] UPDATE ADDRESS HI
+			;Current memory address (hi-byte)
+vdc_UAL		= $13	;[R19] UPDATE ADDRESS LO
+			;Current memory address (lo-byte)
+vdc_AAH		= $14	;[R20] ATTRIBUTE START ADDRESS HI
+			;Attribute memory starting address (hi-byte) (default = $08)
+vdc_AAL		= $15	;[R21] ATTRIBUTE START ADDRESS LO
+			;Attribute memory starting address (lo-byte) (default = $00)
+vdc_CTH		= $16	;[R22] CHARACTER TOTAL/DISPLAYED HORIZONTAL
+			;Character horizontal size control register
+			;bits 7:4 = total character width, including gap (-1) (default = 7)
+			; "   3:0 = displayed character width (default = 8)
+vdc_CDV		= $17	;[R23] CHARACTER DISPLAYED VERTICAL
+			;bits 7:3 = not used
+			; "   4:0 = character vertical size (default = $08)
+vdc_VSS		= $18	;[R24] VERTICAL SMOOTH SCROLL
+			;bits	7 = block mode (0 = fill, 1 = copy) (default = 0)
+			; "	6 = reverse mode (0 = normal, 1 = reverse) (default = 0)
+			; "	5 = blinking rate (0 = fast, 1 = slow) (default = 0)
+			; "   4:0 = upward vertical smooth scrolling (default = $20)
+vdc_HSS		= $19	;[R25] HORIZONTAL SMOOTH SCROLL
+			;bits	7 = bitmap mode (default = 0, disabled)
+			; "	6 = attribute memory (default = 1, enabled)
+			; "	5 = semigraphic mode (default = 0, disabled)
+			; "	4 = double pixel (default = 0, disabled)
+			; "   3:0 = horizontal smooth scrolling (default = $00, 8563 R7A; $07, 8563 R8/R9)
+vdc_COLOR	= $1a	;[R26] FOREGND/BACKGND COLOR (default = $f0)
+			;bits 7:4 = foreground color (attribute disabled) (default = $0f, white)
+			; "   3:0 = background and border color (attribute disabled) (default = $00, black)
+vdc_AI		= $1b	;[R27] ADDRESS INCREMENT/ROW
+			;Address increment per row of characters (default = $00)
+vdc_CB		= $1c	;[R28] CHARACTER BASE ADDRESS (default = $20)
+			;bits 7:5 = start address of character pattern definitions
+			;	%000 = $0000
+			;	%001 = $2000 (default)
+			;	%010 = $4000
+			;	%011 = $6000
+			;	%100 = $8000
+			;	%101 = $a000
+			;	%110 = $c000
+			;	%111 = $e000
+			; "	4 = memory type (0 = 4416, 16 KB; 1 = 4164, 64 KB) (default = 0, 16 KB)
+			; "   3:0 = not used
+vdc_UL		= $1d	;[R29] UNDERLINE SCAN LINE
+			;bits 7:3 = not used
+			; "   4:0 = underline position from the top of the character (default = $07)
+vdc_COUNT	= $1e	;[R30] WORD COUNT
+			;Number of bytes for block write or copy
+vdc_DATA	= $1f	;[R31] DATA
+			;Memory read/write (auto incrementing address)
+vdc_BAH		= $20	;[R32] BLOCK START ADDRESS HI
+			;Source address for block copy (hi-byte)
+vdc_BAL		= $21	;[R33] BLOCK START ADDRESS LO
+			;Source address for block copy (lo-byte)
+vdc_DEB		= $22	;[R34] DISPLAY ENABLE BEGIN
+			;Beginning position for horizontal blanking (default = $7d)
+vdc_DEE		= $23	;[R35] DISPLAY ENABLE END
+			;Ending position for horizontal blanking (default = $64)
+
+;Default memory configuration
+VDCSCN = $0000		;display memory start address
+VDCATT = $0800		;attribute memory start address
+
+; --------------------
+; - CIA registers
+; --------------------
+
+CIAPRA	= $dc00		;CIA #1 Data Port Register A (keyboard columns and joystick in port #2)
+CIAPRB	= $dc01		;CIA #1 Data Port Register B (keyboard rows and joystick in port #1)
+CIDDRA	= $dc02		;CIA #1 Data Direction Register A (default = $ff, all bits as output)
+CIDDRB	= $dc03		;CIA #1 Data Direction Register B (default = $00, all bits as input)
+
+; --------------------
+; - Kernal routines
+; --------------------
+
+RESET	= $e000		;Main system initialization sequence
+INITDMA	= $e0f9		;Install DO_DMA routine from ROM $f85a-$f866 to RAM $03f0-$03fc (13 bytes)
+FNADRY	= $f7ae		;Retrieve a character from the current filename
+
+;Interrupt handlers (copied into all RAM banks)
+JNMI	= $ff05 	;Jump to NMI handler routine, then indirect jump throught INMI vector ($0318)
+JIRQ	= $ff17		;Jump to IRQ or BRK handler routine, then indirect jump throught
+			;IIRQ vector ($0314) or IBRK vector ($0316)
+CRTI	= $ff33		;Common exit routine for all interrupt routines
+JRESET	= $ff3d		;Jump to reset handler routine, then jump to the RESET routine ($e000)
+FREKFF	= $ff45		;Unused RAM until:
+			;RAM 0	$ffd0: 8502 code to pass control to Z80
+			; "	$ffe0: Z80 code to pass control to 8502
+			;RAM 1	$fffd: string 'CBM' followed by the System vector ($e224)
+
+;Kernal tables
+CONFIG	= $f7f0		;Table of MMU register settings for standard banks (16 bytes)
+
+; --------------------
+; - Kernal Jump table
+; --------------------
+
+;C128 extension to the standard CBM Jump table
+DMACALL = $ff50		;[$f7a5] [DMA_CALL] Performs a DMA operation (uses DO_DMA)
+PHOENIX	= $ff56		;[$f867] Initialize function ROMs and attempt to boot a disk in the default drive
+SWAPPER	= $ff5f		;[$c02a] Switch 40/80 columns
+INIT80	= $ff62		;[$ce0c] [DLCHR] Initialize character definitions for 80-column screen
+SETBNK	= $ff68		;[$f73f] Set data and file name banks for I/O operations (a = data, x = file name)
+GETCFG	= $ff6b		;[$f7ec] Translate a bank number into an MMU register setting
+JSRFAR	= $ff6e		;[$02cd] Call a subroutine in any bank (preparation: BANK, PC_HI, PC_LO)
+			;(system is always reconfigured for BANK 15 upon exit)
+JMPFAR	= $ff71		;[$02e3] Jump to a routine in any bank (preparation: BANK, PC_HI, PC_LO)
+INDFET	= $ff74		;[$f7d0] Retrieve a character from any bank (uses FETCH)
+INDSTA	= $ff77		;[$f7da] Store the accumulator contents in any bank (uses STASH)
+INDCMP	= $ff7a		;[$f7e3] Compare the accumulator contents with a value from any bank (uses CMPARE)
+PRIMM	= $ff7d		;[$fa17] Handle PRIMM (print immediate) function
+
+;System calls not available on VIC-20
+KERVER	= $ff80		;Kernal version identifier byte
+CINT	= $ff81		;Initialize Screen Editor (C128/264 Series: keyboard buffer not preserved)
+IOINIT	= $ff84		;Initialize I/O Devices
+RAMTAS	= $ff87		;Perform RAM test and set pointers to the top and bottom of RAM
+
+;Standard CBM Jump table
+RESTOR	= $ff8a		;Restore default I/O vectors
+SETMSG	= $ff90		;Set Message Control Flag (a = flag)
+SCNKEY	= $ff9f		;Scan keyboard (keycode -> a)
+UNLSN	= $ffae		;Send UNLISTEN to a Device on the Serial Bus
+LISTEN	= $ffb1		;Send LISTEN to a Device on the Serial Bus (a = device address)
+SETLFS	= $ffba		;Set Logical File parameters (a = file, x = device, y = sec. address)
+SETNAM	= $ffbd		;Set file name parameters (a = name length, x:y -> name string)
+OPEN	= $ffc0		;Open a Logical I/O File (preparing: SETLFS, SETNAM)
+CLOSE	= $ffc3		;Close a Logical I/O file (a = file)
+CHKIN	= $ffc6		;Designate a Logical File As the Current Input Channel (x = file)
+CHKOUT	= $ffc9		;Designate a Logical File As the Current Output Channel (x = file)
+CLRCH	= $ffcc		;Restore default I/O channels
+CHRIN	= $ffcf		;Input a Character from the Current Device (preparing: OPEN, CHKIN)
+			;(results: a = received char (or error code), carry set = error)
+CHROUT	= $ffd2		;Output Character in Accumulator to the Current Device (preparing: OPEN, CHKOUT)
+			;(results: a = error code (if any), carry set = error, interrupts re-enabled)
+LOAD	= $ffd5		;Load RAM from a device (a = 0: load, otherwise: verify, x:y = load address)
+STOP	= $ffe1		;Test STOP Key (zero set = detected) (x, y = preserved, if not detected) 
+GETIN	= $ffe4		;Get one Byte from the Input Device (received byte -> a)
+CLALL	= $ffe7		;Close all logical I/O files (and restore default I/O channels)
+			;(NOTE: does not actually close any file open on tape, disk, or RS-232 device)
+SCREEN	= $ffed		;Read number of Screen rows and columns (columns -> x, rows -> y)
+PLOT	= $fff0		;Set/Get cursor position (CLC = set, SEC = get, x = row, y = column)
+			;(C128: x not preserved, after set)
+IOBASE	= $fff3		;Read base address of I/O Devices (lo-byte -> x, hi-byte -> y)
+
+;System vectors (copied into all RAM banks)
+SYSTEM	= $fff8		;[$e224] Operating System Vector (soft reset) (not copied to RAM 0)
+NMIVEC	= $fffa		;[$ff05] Non-Maskable Interrupt
+RESVEC	= $fffc		;[$ff3d] System Reset
+IRQVEC	= $fffe		;[$ff17] Maskable Interrupt Request and Break
+
+; --------------------
+; - Symbols
+; --------------------
+
+;ASM 6502 opcodes
+JSR_opc		= $20	;jump to subroutine
+BIT1_opc	= $24	;zero page BIT (1-byte operand)
+BIT2_opc	= $2c	;absolute BIT (2-byte operand)
+JMP_abs_opc	= $4c	;absolute jump
+JMP_ind_opc	= $6c	;indirect jump
+STA_y_opc	= $91	;indirect indexed Y addressing STA
+
+;BASIC single token keywords
+GOTO_tk		= $89	;GOTO
+IF_tk		= $8b	;IF
+REM_tk		= $8f	;REM
+ON_tk		= $91	;ON
+CLR_tk		= $9c	;CLR
+SYS_tk		= $9e	;SYS
+GET_tk		= $a1	;GET
+NEW_tk		= $a2	;NEW
+TO_tk		= $a4	;TO
+THEN_tk		= $a7	;THEN
+FRE_tk		= $b8	;FRE
+POS_tk		= $b9	;POS
+RCLR_tk		= $cd	;RCLR
+RGR_tk		= $cc	;RGR
+RDOT_tk		= $d0	;RDOT
+ELSE_tk		= $d5	;ELSE
+GRAPHIC_tk	= $de	;GRAPHIC
+TRON_tk		= $d8	;TRON
+AUTO_tk		= $dc	;AUTO
+PAINT_tk	= $df	;PAINT
+CHAR_tk		= $e0   ;CHAR
+BOX_tk		= $e1	;BOX
+CIRCLE_tk	= $e2	;CIRCLE
+GSHAPE_tk	= $e3	;GSHAPE
+SSHAPE_tk	= $e4	;SSHAPE
+DRAW_tk		= $e5	;DRAW
+LOCATE_tk	= $e6	;LOCATE
+COLOR_tk	= $e7	;COLOR
+SCNCLR_tk	= $e8	;SCNCLR
+HELP_tk		= $ea	;HELP
+
+;BASIC dual token keywords
+FN_dtk		= $ce	;[ESC_FN_TK] dual token function prefix
+CMD_dtk		= $fe	;[ESC_CMD_TK] dual token command prefix
+BANK_dtk	= $02	;BANK
+PLAY_dtk	= $04	;PLAY
+RWINDOW_dtk	= $09	;RWINDOW
+BEGIN_dtk	= $18	;BEGIN
+QUIT_dtk	= $1e	;QUIT
+OFF_dtk		= $24	;OFF
+FAST_dtk	= $25	;FAST
+SLOW_dtk	= $26	;SLOW
+
+;BASIC operators
+ADD_tk		= $aa	;add '+'
+SUB_tk		= $ab	;subtract '-'
+MUL_tk		= $ac	;multiply '*'
+DIV_tk		= $ad	;divide '/'
+EXP_tk		= $ae	;exponentiate '^'
+AND_tk		= $af	;logical AND
+OR_tk		= $b0	;logical OR
+GRTR_tk		= $b1	;greater than '>'
+EQUAL_tk	= $b2	;equal to '='
+LESS_tk		= $b3	;less than '<'
+
+;BASIC errors
+SYNTAX_err	= $0b	;SYNTAX ERROR
+QUANT_err	= $0e	;ILLEGAL QUANTITY
+TYPE_err	= $16	;TYPE MISMATCH
+NOGFX_err	= $23	;NO GRAPHICS AREA
+UNIMPL_err	= $28	;UNIMPLEMENTED COMMAND
+READY_err	= $80	;READY (fall through to Main BASIC Loop)
+OK_err		= $ff	;no errors
+
+; --------------------
+; - Keyboard & chars
+; --------------------
+
+;PETSCII chars
+space_char	= $20	;space char
+quote_char	= $22	;quotation mark (")
+up_arrow	= $5e	;upwards arrow (^)
+left_arrow	= $5f	;leftwards arrow (<-)
+line_char	= $c0	;light horizontal line
+
+;Cursor keys
+CRSR_down	= $11	;down
+CRSR_right	= $1d	;right
+CRSR_up		= $91	;up
+CRSR_left	= $9d	;left
+
+;Control keys
+STOP_char	= $03	;RUN/STOP
+TAB_char	= $09	;TAB
+RETURN_char	= $0d	;RETURN (ENTER)
+DEL_char	= $14	;delete (backspace)
+ESC_char	= $1b	;ESC (escape)
+CASE_lo		= $0e	;lowercase char set
+CASE_up		= $8e	;uppercase char set
+RVS_on		= $12	;reverse on (CTRL+9 or CTRL+R)
+RVS_off		= $92	;reverse off (CTRL+0)
+HOME_char	= $13	;HOME
+CLR_char	= $93	;clear screen (SHIFT+HOME)
+
+;Alias chars
+TAB	= $09		;TAB
+CR	= $0d		;carriage return
+ESC	= $1b		;ESC (escape)
+SP	= $20		;space
+QT	= $22		;quotation mark
+
+;Keyboard scan codes
+DEL_key		= $00	;INST/DEL
+RETURN_key	= $01	;RETURN
+CRSRH_key	= $02	;cursor horizontal
+CRSRV_key	= $07	;cursor vertical
+W_key		= $09	;'W'
+A_key		= $0a	;'A'
+Z_key		= $0c	;'Z'
+S_key		= $0d	;'S'
+E_key		= $0e	;'E'
+R_key		= $11	;'R'
+D_key		= $12	;'D'
+C_key		= $14	;'C'
+F_key		= $15	;'F'
+X_key		= $17	;'X'
+Y_key		= $19	;'Y'
+B_key		= $1c	;'B'
+H_key		= $1d	;'H'
+V_key		= $1f	;'V'
+HOME_key	= $33	;CLR/HOME
+SPACE_key	= $3c	;space bar
+Q_key		= $3e	;'Q'
+STOP_key	= $3f	;RUN/STOP
+no_key		= $58	;no key pressed
+
+;Extended keyboard scan codes
+ESC_key		= $48	;ESC
+ENTER_key	= $4c	;ENTER
+UP_key		= $53	;cursor up
+DOWN_key	= $54	;cursor down
+LEFT_key	= $55	;cursor left
+RIGHT_key	= $56	;cursor right
+
+;ASCII color codes (16 values)
+ASCCOL = [$90,$05,$1c,$9f,$9c,$1e,$1f,$9e,$81,$95,$96,$97,$98,$99,$9a,$9b]
+
+;C128 color code table:
+
+;BASIC	code	VIC-II		VDC		RGBI code	CVBS mono
+;=====	====	===========	============	==========	=========
+; 1	 0	black		black		0000 = $00	black
+; 2	 1	white		white		1111 = $0f	white
+; 3	 2	red		dark red	1000 = $08	gray
+; 4	 3	cyan		light cyan	0111 = $07	white
+; 5	 4	purple		light purple	1011 = $0b	white
+; 6	 5	green		dark green	0100 = $04	gray
+; 7	 6	blue		dark blue	0010 = $02	gray
+; 8	 7	yellow		light yellow	1101 = $0d	white
+; 9	 8	orange		dark purple	1010 = $0a	gray
+;10	 9	brown		brown		1100 = $0c	gray
+;11	10	light red	light red	1001 = $09	white
+;12	11	dark gray	dark cyan	0110 = $06	gray
+;13	12	medium gray	medium gray	0001 = $01	black
+;14	13	light green	light green	0101 = $05	white
+;15	14	light blue	light blue	0011 = $03	white
+;16	15	light gray	light gray	1110 = $0e	gray
