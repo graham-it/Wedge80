@@ -1,0 +1,1092 @@
+Wedge80
+=======
+
+Wedge80 a C128 BASIC extension for VDC graphics
+Copyright (c) 2026 Graham (Francesco Gramignani)
+
+Version 2.04
+Revision 9/5/2026
+
+https://graham-it.itch.io
+https://github.com/graham-it
+https://csdb.dk/scener/?id=40810
+
+
+Introduction
+============
+
+	Wedge80 is a program that extends the Commodore 128's BASIC 7.0 to take
+advantage of the graphics capabilities offered by the MOS 8563 VDC (Video
+Display Controller) chip, which is normally used only in 80-column text mode.
+
+	Wedge80 is compatible with the PAL versions of the C128/C128D, equipped
+with 16k or 64k bytes of video RAM dedicated to the VDC chip, and with the
+official BASIC 7.0 ROM revisions released between 1985 and 1986.
+
+	To access the VDC chip's graphics capabilities, Wedge80 uses the same
+instruction set as BASIC 7.0, extending the number and range of supported
+parameters.
+	Thus, Wedge80 can handle both VDC and VIC-II graphics, ensuring full
+compatibility with existing software.
+	A complete list of Wedge80 extended commands and functions can be found
+in the "Extended BASIC" section at the end of this document.
+
+
+Installation
+=============
+
+	Wedge80 is available in two versions: one with the 'Online Guide' (how
+it works is explained later), and the other, smaller, without it:
+
+-	WEDGE80		full version
+-	WEDGE80LT	light version (without 'Online Guide')
+
+	To install Wedge80, after inserting the disk containing the program,
+simply load and run one of the two versions with the following commands:
+
+-	DLOAD "file name"	(equivalent to LOAD "file name",8)
+-	RUN
+
+or:
+-	RUN "file name"		(loads and runs)
+
+	During installation, the amount of memory available on the VDC chip
+(16k or 64k bytes) is automatically detected to adapt the program to the
+machine in use.
+
+	After launching, the program displays a system status message
+containing the following information:
+
+- Program version
+- Current VDC graphics mode (resolution and color)
+- Amount of detected VDC memory (16k or 64k)
+- Memory available for BASIC (program and variables)
+- AUTOFAST mode status
+- 'Online Guide' availability ('HELP +' command)
+- Last program error (if any)
+
+	This information can be viewed at any time from the BASIC prompt with
+the HELP command, which can be accessed using the dedicated key on the C128
+keyboard (which on the VICE 3.10 emulator corresponds to the 'End' key on the
+PC keyboard, or the 'F5' key in previous versions).
+
+
+VDC Graphics
+============
+
+	Wedge80 offers 144 theoretical combinations for configuring bitmap
+graphics using the VDC chip, allowing you to separately select the horizontal
+and vertical resolutions and the size of the color cells.
+
+	As we'll see later, only some VDC chip configurations are actually
+usable and can be activated using the command:
+
+-	GRAPHIC mode[,clear][,h/res][,v/res][,color]
+
+	(note: parameters in square brackets are optional)
+
+mode	= graphic mode:
+		0 = VIC-II 40-column text
+		1 = VIC-II bitmap (320 x 200)
+		2 = VIC-II split screen bitmap
+		3 = VIC-II multicolor bitmap (160 x 200)
+		4 = VIC-II split screen multicolor bitmap
+		5 = VDC 80-column text
+		6 = VDC bitmap
+
+clear	= clear screen:
+		0 = not active (default)
+		1 = active (resetting coordinates)
+
+h/res	= horizontal resolution:
+		0 = 320 pixels		1 = 360 pixels
+		2 = 640  "		3 = 720  "
+		4 = 800  "		5 = 840  "
+
+v/res	= vertical resolution:
+		0 = 128 pixels		1 = 144 pixels
+		2 = 176  "		3 = 200  "
+		4 = 240  "		5 = 256  "
+
+color	= color mode:
+		0 = monochrome		1 = 8x8 cell size
+		2 = 8x4 cell size	3 = 8x2  "
+
+	The first two parameters behave similarly to BASIC 7.0, except that in
+the first one, you can specify a value of 6, which activates the VDC chip's
+bitmap mode.
+	The subsequent parameters are optional and allow you to configure the
+VDC's graphics mode, which is set differently when the program starts depending
+on the amount of VDC RAM detected:
+
+-	VDC RAM 16k:	640 x 200 pixels, monochrome
+-	VDC RAM 64k:	640 x 240 pixels, color 8x4 cell size
+
+	For example, to clear the screen and set the VDC to a resolution of
+640 x 240 pixels, with color cells of size 8x2, you would enter the following
+command:
+
+-	GRAPHIC 6,1,2,4,3
+
+	When the VDC is in bitmap mode, if the BASIC prompt is in 80-column
+mode, it will automatically switch to the VIC-II chip's 40-column mode.
+
+	To restore the VDC to text mode, you can use the following command,
+which will switch the BASIC prompt to 80-column mode:
+
+-	GRAPHIC 5
+
+	Instead, to turn off the VDC's bitmap mode, while keeping the BASIC
+prompt in 40-column mode, you can use the following command:
+
+-	GRAPHIC OFF
+
+	Alternatively, you can use the 'ESC X' key sequence to switch between
+text modes, even when the VDC is in bitmap mode, as explained below.
+
+	Once you set a specific graphics configuration, it will remain saved
+even after you return to text mode. To return to the previous graphics
+configuration, simply enter the command:
+
+-	GRAPHIC 6
+
+	In systems with 64k bytes of VDC RAM, switching between text and bitmap
+mode of the VDC RAM leaves the information in memory unchanged.
+	This does not happen in systems with 16k bytes of VDC RAM, since the
+two modes (text and graphics) share the same memory area.
+
+
+VDC Colors
+==========
+
+	The so-called 'monochrome' mode actually uses two distinct colors, from
+the 16 available in the VDC palette, which are used for the entire image and
+can be changed using the following commands:
+
+-	COLOR 6,n	background and border color
+-	COLOR 7,n	foreground color
+
+	(where: n = 1..16)
+
+	In color mode, the image is divided into multiple cells 8 pixels wide
+and variable height, in which you can specify a pair of colors (called
+'attributes') for the background and foreground, independent of those of the
+other cells.
+
+	Therefore, the smaller the color cells, the greater the color detail in
+the image and the less memory they occupy in the VDC's RAM.
+
+	As you might expect, this technical limitation introduces the artifact
+known as 'attribute clash' or 'color clash' (similar to the graphics of the ZX
+Spectrum), making it impossible, for example, to create cartoon-like images, in
+which the subject is typically surrounded by a border of a different color than
+the background and the subject itself.
+
+	The color pair (foreground and background) that will be used to draw
+the points with subsequent commands is stored in a memory location called the
+'source', which can be modified with the commands:
+
+-	COLOR 8,n	background color
+-	COLOR 9,n	foreground color
+
+	In this mode, the background color is independent of the border color,
+and the latter can be changed as shown for the monochrome mode.
+
+
+Color Palette
+=============
+
+	The colors available on the C128's VDC chip are different from those on
+the VIC-II, however in BASIC 7.0 their codes have been rearranged to have a
+similar correspondence:
+
+Code	VIC-II		VDC		RGBI code	CVBS mono
+====	============	============	===========	=========
+ 1	Black	 	Black		%0000 = $00	Black
+ 2	White		White		%1111 = $0f	White
+ 3	Red		Dark Red	%1000 = $08	Gray
+ 4	Cyan		Light Cyan	%0111 = $07	White
+ 5	Purple		Light Purple	%1011 = $0b	White
+ 6	Green		Dark Green	%0100 = $04	Gray
+ 7	Blue		Dark Blue	%0010 = $02	Gray
+ 8	Yellow		Light Yellow	%1101 = $0d	White
+ 9	Orange		Dark Purple	%1010 = $0a	Gray
+10	Brown		Brown		%1100 = $0c	Gray
+11	Light Red	Light Red	%1001 = $09	White
+12	Dark Gray	Dark Cyan	%0110 = $06	Gray
+13	Medium Gray	Medium Gray	%0001 = $01	Black
+14	Light Green	Light Green	%0101 = $05	White
+15	Light Blue	Light Blue	%0011 = $03	White
+16	Light Gray	Light Gray	%1110 = $0e	Gray
+
+	The RGBI (Red, Green, Blue, and Intensity) codes are not used by the
+BASIC interpreter, but represent the actual values stored in the VDC chip's
+registers and memory cells, which are then transmitted to the monitor via a
+series of TTL digital signals.
+
+	The 'CVBS mono' column refers to the way the colors of the C128's RGBI
+port are displayed on the screen when the C128 is connected to a monochrome
+monitor (via pin 7 of the RGBI port).
+
+
+Getting Started
+===============
+
+	Graphics commands apply to the last graphics mode used (VIC-II or VDC),
+which can be selected with the 'GRAPHIC' command (quickly accessed from the
+keyboard with the 'F1' key), as described in the previous paragraphs.
+
+	Once the VDC bitmap mode is activated, you can use the following
+command to draw a point or line on the screen:
+
+-	DRAW [mode][,x0,y0][<TO|,> xn,yn][...]
+
+	The 'mode' option (as with the 'BOX' and 'CIRCLE' commands) specifies
+how pixels are drawn and replaces the 'source' option in BASIC 7.0 commands:
+
+mode =	0	to erase
+	1	to draw (default)
+	2	performs an XOR with the pixels already on the screen
+
+	The x0,y0 coordinate pair represents an isolated point or the starting
+point of a line, while the xn,yn coordinates, when preceded by the keyword
+'TO', indicate the end point of the line; otherwise, if preceded by a comma,
+they indicate another isolated point.
+
+	To draw a line or a polygon, you can extend a line by indicating
+additional coordinate pairs, preceded by the keyword 'TO'.
+	Similarly, you can draw multiple isolated points by separating the
+coordinate pairs with a comma.
+
+	If no parameters are specified, a point or line will be drawn starting
+from the current position of the bitmap cursor, determined by the last point
+drawn with the previous instruction.
+
+	When the program is first started and after each screen clear, the
+bitmap cursor is reset to coordinates 0,0 (corresponding to the upper-left
+corner).
+
+	Coordinates can also be expressed relative to the current position in
+the following ways:
+
+-	by prefixing the coordinates with the '+' and '-' signs
+-	using polar notation, length and angle (in sexagesimal degrees)
+	separated by a semicolon ';'
+
+	On machines with the first version of BASIC 7.0, recognizable by the
+year 1985 displayed in the computer's startup message, due to a bug, it is not
+possible to use negative values for relative coordinates.
+
+
+Online Guide
+============
+
+	The full version of Wedge80 comes with an 'Online Guide', which is
+installed in the upper part of the RAM block 1, normally used for storing
+BASIC variables.
+	To view the complete list of Wedge80 commands and extended functions,
+simply enter the following command at the BASIC prompt:
+
+-	HELP +		(with or without space)
+
+	Additionally, you can get detailed information about a specific command
+or function using the following syntax:
+
+-	HELP keyword
+
+	Where 'keyword' is the word used to identify the command or function
+you're requesting information about.
+
+	The space between 'HELP' and 'keyword' can be omitted, and keywords can
+also be expressed in abbreviated form (e.g., 'G' + SHIFT 'R' instead of
+'GRAPHIC').
+
+
+AUTOFAST Mode
+=============
+
+	When Wedge80 is started, AUTOFAST mode is enabled by default. This
+allows extended Wedge80 commands to be executed in FAST mode (2 MHz), then
+automatically reverts to SLOW mode (1 MHz) upon completion.
+
+	AUTOFAST mode is useful for sending commands to the VDC from the
+VIC-II's 40-column display, which is normally blank when the standard FAST mode
+is active. It can be used in both direct and program mode.
+
+	AUTOFAST mode is automatically deactivated when the processor speed is
+changed using the standard 'FAST' and 'SLOW' commands. To re-enable it, enter
+the following command:
+
+-	AUTOFAST
+
+	This command consists of the two BASIC 7.0 keywords 'AUTO' and 'FAST'
+and is recognized even if the latter are separated by a space.
+	In direct mode, a message will be displayed whenever the AUTOFAST mode
+status is changed. You can also check its status using the 'HELP' command.
+
+
+ESCAPE Sequences
+================
+
+	The C128 offers several functions for controlling the Screen Editor,
+accessible directly from the keyboard via the 'ESC' key (which in VICE 3.10
+corresponds to the 'F9' key on a PC, or the 'F1' key in previous versions),
+followed by a key to form a sequence.
+
+	Among these, the 'ESC X' sequence allows you to quickly switch between
+40-column and 80-column text mode.
+	When the 'ESC X' sequence is detected and the VDC is in bitmap mode,
+the 80-column text mode is automatically restored, transparently to the user.
+
+
+Wedge80 Library
+===============
+
+	Once installed, Wedge80 offers a function library that allows you to
+use some of its graphics routines directly from a machine language program.
+
+	This is done via a Jump Table, which ensures compatibility with any
+programs developed with this library, even if an updated version of Wedge80 is
+released.
+
+Routine name	Address		Function (parameters)
+============	=========	===============================================
+StartWedge	$1300		Enable Wedge80
+QuitWedge	$1303		Disable Wedge80
+SetMem80	$1306		Set VDC bitmap address (GRAPNT)
+GetMode80	$1309		Get VDC mode (VDC R25 bit 7)
+SetTxt80	$130c		Activate VDC text mode
+SetBmp80	$130f		Activate VDC bitmap mode
+ClrBmp80	$1312		Clear VDC bitmap screen and reset coords
+GetBgCol80	$1315		Get VDC mono background and border color (RGBI)
+SetBgCol80	$1318		Set VDC mono background and border color (RGBI)
+GetFgCol80	$131b		Get VDC mono foreground color (RGBI)
+SetFgCol80	$131e		Set VDC mono foreground color (RGBI)
+GPlot80		$1321		Draw a pixel (plotmode, XPOS, YPOS)
+ReadPt80	$1324		Test a pixel (plotmode, XPOS, YPOS)
+DrawLn80	$1327		Draw a line (plotmode, XPOS, YPOS, XDEST, YDEST)
+Box80		$132a		Draw a box (plotmode, XCORDl, YCORDl,
+				XCORD2, YCORD2, BOXANG, x = fill flag)
+Circle80	$132d		Draw a circle (plotmode, XCIRCL, YCIRCL, XRCOS,
+				YRCOS, YRSIN, XRSIN, ANGBEG, ANGEND)
+				(x = degrees between each segment)
+Paint80		$1330		Fill a graphics area (plotmode, XPOS, YPOS)
+Char80		$1333		Print a BASIC string to VDC bitmap screen
+				(Note: string must be in RAM of block 1)
+				(plotmode, a = length, x/y = address,
+				COLCNT/ROWCNT = position, CHRREV = reverse)
+
+
+BASIC Demos
+===========
+
+	Wedge80 comes with some demo programs, written in extended BASIC, to
+show how it works:
+
+1. EASY GRAPH		Graphs a user-defined mathematical function.
+2. GRAPHIC SAMPLE	Draws some geometric shapes.
+3. MARBLE		Demonstrates the use of the CIRCLE command.
+4. MONOSCOPE		Tests the various graphics modes of the VDC.
+5. QIX			Runs a simple animation.
+6. RACING CARS		Demonstrates the use of the SSHAPE/GSHAPE commands.
+7. SCREEN SAVER		Shows 3 types of user-configurable screen savers.
+8. SPACESHIP		Assembles a scene by combining multiple modules.
+
+
+Sketch80
+========
+
+	Sketch80 is a simple demonstration program that allows you to draw
+graphics on the VDC screen using the cursor keys.
+	Unlike the previous programs, this program is compiled in ASSEMBLY and
+uses the graphics library provided by Wedge80, which helps reduce the size of
+the compiled file.
+	The program resides in the BASIC area and, after installing Wedge80,
+can be loaded and run from the BASIC prompt in the usual ways.
+
+The keyboard commands are as follows:
+
+	CRSR keys	move the cursor in all 4 directions
+	HOME		moves the cursor to the center of the screen
+	CLR		clears the screen (SHIFT + HOME)
+	B		changes the background color
+	F		changes the foreground color
+	H		changes the horizontal resolution
+	V		changes the vertical resolution
+	C		color mode (on/off)
+	R		reverse mode (on/off)
+	E		erase mode (on/off)
+	X		XOR mode (on/off)
+	W		horizontal pixel size (single/double)
+	S		CPU speed (1 MHz/2 MHz)
+	ESC		exits the program
+	RUN/STOP	interrupts the program (with a BREAK error)
+
+	To move the cursor, you can use either the classic arrow keys (like
+on the C64) or the C128's extended keyboard (the gray keys in the top row),
+which, on the VICE 3.10 emulator, correspond to the normal four cursor keys.
+	If you move beyond the screen borders (sides, top, or bottom), the
+cursor will appear on the opposite side.
+
+
+Limitations
+===========
+
+	The resolution of 840 x 256 pixels can be displayed on a PAL-version
+C128/C128D with 64k bytes of VDC RAM, connected to a monitor (such as the
+Commodore 1084S or Philips CM8833) with an RGBI input, similar to the CGA
+standard for IBM-compatible PCs.
+
+	On the VICE 3.10 emulator, the maximum horizontal resolution that can
+be displayed on the VDC screen is 800 pixels, while on the Z64K emulator
+(version 2.1.2), it can display up to 840 pixels, as on the real machine.
+
+	Due to a technical limitation of the VDC, a glitch occurs in color mode
+whereby, when the horizontal resolution is set to a value greater than 656
+pixels, the cells in a vertical band in the center of the screen take on the
+same color as those on the right side, starting at coordinate 656.
+
+	Also in color mode, on the VICE emulator, the right side of the screen,
+starting at coordinate 656, is darkened, while it is entirely visible both on
+the real machine and on the Z64K emulator (despite the aforementioned color
+glitch).
+
+	The Wedge80 BASIC interpreter does not impose any restrictions on the
+choice of screen configuration parameters, but the usable VDC graphics modes
+are limited by the amount of installed memory (16k or 64k bytes).
+
+	For these reasons, the modes that can be displayed with emulators are,
+at most, the following:
+
+	mono (64k)			color (64k)
+	===========			===============
+	320 x 256			320 x 256 8x2	
+	360 x 256			360 x 256 8x2 (8x4 with Z64k)
+	640 x 256			640 x 256 8x2
+	720 x 256			720 x 256 8x2 (8x4 with Z64k, glitch)
+	800 x 256			800 x 256 8x2 (8x8 with Z64k, glitch)
+	840 x 256 (Z64k only)		840 x 256 8x8 (Z64k only, glitch)
+
+	mono (16k)			color (16k)
+	===========			===============
+	320 x 256			320 x 240 8x2
+	360 x 256			360 x 200 8x2 (8x4 with Z64k)
+	640 x 200			640 x 144 8x4
+	720 x 176			720 x 128 8x4 (glitch)
+	800 x 144
+	840 x 144 (Z64k only)
+
+	As for the real machine, at any resolution, the size of the color cells
+cannot be smaller than 8x4 pixels (8x8 in the case of 360 pixels horizontally),
+so the modes that can be correctly displayed are, at most, the following:
+
+	mono (64k)			color (64k)
+	===========			===============
+	320 x 256			320 x 256 8x4
+	360 x 256			360 x 256 8x8
+	640 x 256			640 x 256 8x4
+	720 x 256			720 x 256 8x4 (glitch)
+	800 x 256			800 x 256 8x4   "
+	840 x 256			840 x 256 8x4   "
+
+	mono (16k)			color (16k)
+	===========			===============
+	320 x 256			320 x 256 8x4
+	360 x 256			360 x 256 8x8
+	640 x 200			640 x 144 8x4
+	720 x 176			720 x 128 8x4 (glitch)
+	800 x 144
+	840 x 144
+
+
+Technical Notes
+===============
+
+	During installation, some of BASIC 7.0's native graphics routines are
+copied to RAM and patched to adapt them to the VDC chip's graphics, which has
+a different memory organization than the VIC-II.
+
+	The line-drawing routine is based on the Bresenham algorithm and is
+also used to draw rectangles and circles.
+
+	Due to its implementation, the 'BOX' command has a bug that prevents it
+from working correctly when the 'fill' option is specified in combination with
+the 'XOR' mode.
+
+	After a BASIC 'Warm start' (for example, by pressing the RUN/STOP +
+RESTORE keys), Wedge80 will remain active, but the VDC will be forcibly
+switched to 80-column text mode.
+
+	In this case, on systems with 64k bytes of VDC RAM, the image can be
+restored without any loss with the command:
+
+-	GRAPHIC 6
+
+	However, on systems with 16k bytes of VDC RAM, a portion of the image
+will be overwritten by a copy of the character set and information on the
+80-column text screen.
+
+	The CHAR command prints characters on the current screen, based on the
+last GRAPHIC command entered.
+	So, for example, to print on the VIC-II's 40-column screen while the
+VDC is in graphics mode, you would run the following command:
+
+-	GRAPHIC 0
+
+	This way, the next CHAR commands you enter will print characters on the
+40-column text screen, while other graphics commands will continue to work on
+the VDC's bitmap screen.
+
+
+Extended BASIC
+===============
+
+	The Wedge80's extended BASIC consists of a set of instructions that can
+be entered by the user in either direct or program mode.
+
+The extended commands are:
+	GRAPHIC		COLOR		SCNCLR		LOCATE
+	DRAW		BOX		CIRCLE		PAINT
+	GSHAPE		SSHAPE		CHAR		AUTOFAST
+	HELP		QUIT
+
+The extended functions are:
+	RGR(n)		RCLR(n)		RWINDOW(n)
+	RDOT(n)		POS(n)
+
+	Instructions not mentioned remain unchanged, and for their use, please
+refer to the BASIC 7.0 Encyclopedia, found in the C128 "System Manual" and in
+the "Commodore 128 Programmer's Reference Guide" (Bantam, 1986).
+
+
+BASIC commands
+==============
+
+	As with BASIC 7.0, parameters in square brackets are optional, and if a
+parameter is missing, subsequent parameters must be preceded by a comma, in the
+same number as the omitted options.
+
+	The commands described here are arranged alphabetically, and spaces
+between parameters have been added for readability, as they are ignored by the
+BASIC interpreter.
+
+
+AUTOFAST
+========
+
+Enables the AUTOFAST mode.
+
+Command syntax:
+
+	AUTOFAST
+
+Note:	without the FAST keyword, it
+	operates as the standard AUTO command.
+
+
+BOX
+===
+
+Draws a BOX on the screen as specified by the parameters
+that follow the command.
+
+Command syntax:
+
+	BOX [mode],x0,y0[,x1,y1][,rot][,fill]
+
+mode	= 0	clear pixels
+	  1	set pixels (default)
+	  2	XOR with foreground
+
+x0,y0	=	the top left corner coordinates
+
+x1,y1	=	the opposite corner
+		(default = current position)
+
+rot	=	the rotation in clockwise degrees
+		(default = 0)
+
+fill	= 0	do not fill the shape (default)
+	  1	fill the shape
+
+Note:	The fill option does not work in XOR mode.
+
+
+CHAR
+====
+
+Displays a string of characters to the current screen
+(bitmap or text) at the position specified.
+
+Command syntax:
+
+	CHAR [mode],col,row [,string][,rev]
+
+mode	= 0	clear using char shape (*)
+	  1	draw solid char (default)
+	  2	XOR with foreground (*)
+	  3	OR with foreground (*)
+
+col	=	column to start printing at
+row	=	row to start printing at
+string	=	string of characters to be printed
+
+rev	= 0	normal mode (default)
+	  1	reverse mode
+
+	(*) new options
+
+
+CIRCLE
+======
+
+Draws circles, ellipses or arcs depending on the parameters
+specified after the command.
+
+Command syntax:
+
+	CIRCLE [mode][,xc,yc][,xr][,yr][,sa][,ea][,rot][,inc]
+
+mode =	0	clear pixels
+	1	set pixels (default)
+	2	XOR with foreground
+
+xc,yc	=	center of the circle (default = current position)
+xr	=	horizontal radius (default = 0)
+yr	=	vertical radius (default = xr) (*)
+sa	=	starting arc angle (default = 0)
+ea	=	ending arc angle (default = 360)
+rot	=	rotation angle in degrees (default = 0)
+inc	=	degrees between each segment (default = 2) (**)
+
+    (*)	Due to the aspect ratio of the VDC screen, to get a proper
+	circle it is recommended to specify: yr = int(xr/2)
+
+   (**)	By varying the number of degrees between each segment, a
+	polygon can be drawn, where: inc = int(360/number of sides)
+	To draw a regular polygon, use the following values:
+
+	       120 = equilateral triangle
+		90 = square
+		72 = pentagon
+		60 = hexagon
+		45 = octagon
+		44 = nonagon
+		36 = decagon
+		30 = dodecagon (etc...)
+
+
+COLOR
+=====
+
+Sets a color for the selected source.
+
+Command syntax:
+
+	COLOR source,value
+
+source	= 0	VIC-II background color
+	  1	VIC-II bitmap foreground color
+	  2	VIC-II multicolor 1
+	  3	VIC-II multicolor 2
+	  4	VIC-II border color
+	  5	VIC-II/VDC text color (40/80-column)
+	  6	VDC text/bitmap mono background and border color
+	  7	VDC bitmap mono foreground color (*)
+	  8	VDC bitmap attribute background color (*)
+	  9	VDC bitmap attribute foreground color (*)
+
+value	=	the code of the color to be used (1..16)
+
+	(*) new options
+
+
+DRAW
+====
+
+Draws dots, lines, and shapes at the positions
+specified by the coordinates.
+
+Command syntax:
+
+	DRAW [mode][,x0,y0][<TO|,> xn,yn][...]
+
+mode	= 0	clear pixels
+	  1	set pixels (default)
+	  2	XOR with foreground
+
+x0,y0	=	start coordinates
+		(default = current position)
+
+xn,yn	=	next coordinates, preceded by:
+		- keyword 'TO'	= end of line
+		- a comma ','	= next point
+
+Note:	Without parameters, a point is drawn
+	at the current coordinates.
+
+
+FAST
+====
+
+Disables the AUTOFAST mode, then
+sets the clock speed to 2 MHz.
+
+Command syntax:
+
+	FAST
+
+
+GRAPHIC
+=======
+
+Selects the screen mode and changes
+the current graphics screen.
+
+Command syntax:
+
+	GRAPHIC mode[,clear][,h/res][,v/res][,color]
+
+mode	= 0	VIC-II 40-column text
+	  1	VIC-II bitmap (320 x 200)
+	  2	VIC-II split screen bitmap
+	  3	VIC-II multicolor bitmap (160 x 200)
+	  4	VIC-II split screen multicolor bitmap
+	  5	VDC 80-column text
+	  6	VDC bitmap (*)
+
+clear	= 0	do not clear screen (default)
+	  1	clear screen
+
+h/res	= screen width (horizontal resolution) (*)
+		0 = 320 pixels		1 = 360 pixels
+		2 = 640  "		3 = 720  "
+		4 = 800  "		5 = 840  "
+
+v/res	= screen height (vertical resolution) (*)
+		0 = 128 pixels		1 = 144 pixels
+		2 = 176  "		3 = 200  "
+		4 = 240  "		5 = 256  "
+
+color	= color mode (attribute memory) (*)
+		0 = monochrome		1 = 8x8 cell size
+		2 = 8x4 cell size	3 = 8x2  "
+
+Alternate syntax:
+
+	GRAPHIC cmd
+
+cmd =	CLR	deallocates the VIC-II bitmap screen
+
+	OFF	switches the VDC display to 80-column
+		text mode, without changing the current
+		screen (*)
+
+	(*) new options
+
+Note:	With 16k of VDC RAM, when switching from bitmap
+	mode to text mode ,screen is always cleared.
+
+
+GSHAPE
+======
+
+Draws a shape stored in a BASIC string variable.
+
+Command syntax:
+
+	GSHAPE string[,x,y][,mode]
+
+string	=	the string variable where the
+		shape to be drawn is stored
+
+x,y	=	top/left corner coordinates,
+		where the shape is to be drawn
+		(default = current coords)
+
+mode	= 0	draw the shape as is (default)
+	  1	invert the shape
+	  2	OR the shape with foreground
+	  3	AND the shape with foreground
+	  4	XOR the shape with foreground
+
+
+HELP
+====
+
+Displays system info or the content of the Online Guide,
+then operates as the standard HELP command.
+
+Command syntax:
+
+	HELP (no args)	display system info:
+			- about Wedge80
+			- current VDC mode
+			- detected VDC RAM
+			- available memory
+			- AUTOFAST mode
+			- Online Guide availability (*)
+			- last program error (if any)
+
+	HELP +		view command/function list (*)
+	HELP keyword	view command/function details (*)
+
+	(*) not available in the 'light' version
+
+
+LOCATE
+======
+
+Places the pixel cursor to a specified
+position on the bitmap screen.
+
+Command syntax:
+
+	LOCATE x,y
+
+x,y	=	the position to move the
+		bitmap pixel cursor to
+
+
+PAINT
+=====
+
+Fills an area starting from a specified position.
+
+Command syntax:
+
+	PAINT [mode][,x,y][,stop]
+
+mode	= 0	clear a filled area
+	  1	fill an empty area (default)
+
+x,y	=	the starting coordinates
+		(default = current coords)
+
+stop	= 0	fill an area that is defined by
+		the color source specified (default) (*)
+	  1	fill an area that is defined by any
+		non-background source (*)
+
+	(*) not available in VDC mode
+
+Note:	The RUN/STOP key breaks the operation at any time.
+
+
+QUIT
+====
+
+Disables Wedge80 BASIC extension.
+
+Command syntax:
+
+	QUIT
+
+To disable Wedge80, the following steps are performed:
+- restore BASIC restart vector (warm start)
+- restore ESC sequence handler vector
+- restore BASIC indirect vectors
+- restore VDC text mode
+
+Then, it can be re-enabled with the following command:
+-	SYS 4864
+
+
+SCNCLR
+======
+
+Clears the selected screen mode, without changing
+the current graphics screen.
+
+Command syntax:
+
+	SCNCLR [mode]
+
+mode	= 0	VIC-II 40-column text
+	  1	VIC-II bitmap (320 x 200)
+	  2	VIC-II split screen bitmap
+	  3	VIC-II multicolor bitmap (160 x 200)
+	  4	VIC-II split screen multicolor bitmap
+	  5	VDC 80-column text
+	  6	VDC bitmap (*)
+
+	(*) new option
+
+Note:	Without arguments, both the current text screen and
+	the current active graphics screen will be cleared.
+
+
+SLOW
+====
+
+Disables the AUTOFAST mode, then
+sets the clock speed to 1 MHz.
+
+Command syntax:
+
+	SLOW
+
+
+SSHAPE
+======
+
+Saves an area of the the screen
+into a BASIC string variable.
+
+Command syntax:
+
+	SSHAPE string,x0,y0[,x1,y1]
+
+string	=	the string variable to which you
+		wish to save the area of screen
+		(max 251 bytes = 2008 pixels)
+		the remaining 4 bytes are used
+		for the shape size (x,y)
+
+x0,y0	=	the starting corner
+		coordinates for the save
+
+x1,y1	=	the opposite corner
+		(default = current coords)
+
+
+BASIC Functions
+===============
+
+	The functions described here accept a numeric value, a variable, or
+an expression, enclosed in parentheses, as an argument and return the
+corresponding numeric value.
+
+
+POS(n)
+======
+
+Returns a value that indicates where the cursor is within
+the current text screen window (40/80-column).
+
+Function syntax:
+
+	return = POS(n)
+
+    n =	0	text cursor column
+	1	text cursor row (*)
+
+	(*) new option
+
+
+RCLR(n)
+=======
+
+Returns the current color value (1..16)
+of the color source specified.
+
+Function syntax:
+
+	return = RCLR(n)
+
+    n =	0	VIC-II text/bitmap background color
+	1	VIC-II bitmap foreground color
+	2	VIC-II multicolor 1
+	3	VIC-II multicolor 2
+	4	VIC-II border color
+	5	VIC-II/VDC text color (40/80 column)
+	6	VDC text/bitmap mono background and border color
+	7	VDC bitmap mono foreground color (*)
+	8	VDC bitmap attribute background color (*)
+	9	VDC bitmap attribute foreground color (*)
+
+	(*) new options
+
+
+RDOT(n)
+=======
+
+Returns the current pixel cursor coordinates
+or the pixel status at current position
+depending on the value specified.
+
+Function syntax:
+
+	return = RDOT(n)
+
+    n =	0	x-coord of the pixel cursor
+	1	y-coord of the pixel cursor
+	2	VIC-II color source of the pixel
+		at current position (0..3)
+	3	VDC pixel status at current position (*)
+		(0 = off, 1 = on)
+	4	VDC background color of current cell (*)
+	5	VDC foreground color of current cell (*)
+
+	(*) new options
+
+
+RGR(n)
+======
+
+Returns the value of the current screen mode.
+
+Function syntax:
+
+	return = RGR(n)
+
+    n =	0	screen mode (standard BASIC)
+			0 = VIC-II 40-column text
+			1 = VIC-II standard bitmap
+			2 = VIC-II split screen bitmap
+			3 = VIC-II multicolor bitmap
+			4 = VIC-II split screen multicolor bitmap
+			5 = VDC 80-column text
+
+	1	scale mode (*)
+			0 = off		1 = on
+
+	2	pixel width (*)
+			1 = single	2 = double
+
+	3	VDC horizontal mode (*)
+	4	VDC vertical mode (*)
+	5	VDC color mode (*)
+
+	6	VDC screen mode (*)
+			0 = text	1 = bitmap
+
+	7	graphics target screen (the screen to which
+		the next graphics command will be applied) (*)
+			0 = VIC-II	1 = VDC
+
+	8	CHAR target screen (the screen to which
+		the next CHAR command will be applied) (*)
+			0 = standard	1 = VDC bitmap
+
+	9	VDC RAM size (16k/64k) (*)
+
+	(*) new options
+
+
+RWINDOW(n)
+==========
+
+Returns dimension information about
+the current screen or window.
+
+Function syntax:
+
+	return = RWINDOW(n)
+
+    n =	0	current text window rows (-1)
+	1	current text window columns (-1)
+	2	current text screen mode (40/80)
+	3	VDC bitmap width (pixels) (*)
+	4	VDC bitmap height (pixels) (*)
+	5	VDC color cell size (pixels) (*)
+	6	VDC bitmap columns (chars) (*)
+	7	VDC bitmap rows (chars) (*)
+
+	(*) new options
+
+
+============================================================
+
+Wedge80 a C128 BASIC extension for VDC graphics
+Copyright (c) 2026 Graham (Francesco Gramignani)

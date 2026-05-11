@@ -1,0 +1,5 @@
+;Wedge80
+;a C128 BASIC extension for VDC graphics
+;Copyright (c) 2026 Graham (Francesco Gramignani)
+
+online_guide = 1		;Online Guide (0 = not included, nonzero = included)
