@@ -120,7 +120,3 @@ This is done via a Jump Table, which ensures compatibility with any programs dev
 
 
 Wedge80 v2.04 (c) 2026 Graham
-
-https://graham-it.itch.io \
-https://github.com/graham-it \
-https://csdb.dk/scener/?id=40810
