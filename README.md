@@ -10,6 +10,7 @@ https://graham-it.itch.io \
 https://github.com/graham-it \
 https://csdb.dk/scener/?id=40810
 
+![](/pics/marble.png)
 
 ### Introduction
 Wedge80 is a program that extends the Commodore 128's BASIC 7.0 to take advantage of the graphics capabilities offered by the MOS 8563 VDC (Video Display Controller) chip, which is normally used only in 80-column text mode.
