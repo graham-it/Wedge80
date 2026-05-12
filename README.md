@@ -77,7 +77,7 @@ VDC graphics can be activated using the command:
 
 -    GRAPHIC mode[,clear][,h/res][,v/res][,color]
 
-|mode|Graphic mode|clear|Clear flag|
+|mode|Graphics mode|clear|Clear flag|
 |:--:|--|:--:|--|
 |0|VIC-II 40-column text|0|Do not clear (defalut)|
 |1|VIC-II bitmap (320x200)|1|Clear screen (and reset coords)|
