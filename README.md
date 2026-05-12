@@ -146,7 +146,7 @@ This is done via a Jump Table, which ensures compatibility with any programs dev
 
 |File name|Description|
 |-|-|
-|EASY GRAPH|Plots on VDC screen a user-defined mathematical function|
+|EASY GRAPH|Plots a user-defined mathematical function|
 |GRAPHIC SAMPLE|Draws some geometric shapes|
 |MARBLE|Demonstrates the use of the CIRCLE command|
 |MONOSCOPE|Tests the various graphics modes of the VDC|
