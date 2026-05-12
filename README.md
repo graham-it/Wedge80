@@ -81,7 +81,7 @@ Once the VDC bitmap mode is activated, you can use the following command to draw
 
 -    DRAW [mode][,x0,y0][<TO|,> xn,yn][...]
 
-|mode|drawing method|
+|mode|Drawing method|
 |:--:|--|
 |0|Erase|
 |1|Draw (default)|
