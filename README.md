@@ -20,11 +20,7 @@ Wedge80 is compatible with the PAL versions of the C128/C128D, equipped with 16k
 
 ### Extended BASIC
 
-To access the VDC chip's graphics capabilities, Wedge80 uses the same instruction set as BASIC 7.0, extending the number and range of supported parameters.
-
-Thus, Wedge80 can handle both VDC and VIC-II graphics, ensuring full compatibility with existing software.
-
-A complete list of Wedge80 commands and extended functions is available in the docs files included.
+To access the VDC chip's graphics capabilities, Wedge80 uses the same instruction set as BASIC 7.0, extending the number and range of supported parameters. Thus, Wedge80 can handle both VDC and VIC-II graphics, ensuring full compatibility with existing software.
 
 Extended commands:
 |||
@@ -43,7 +39,6 @@ Extended commands:
 |AUTOFAST|Enables the AUTOFAST mode (FAST/SLOW to disable)|
 |HELP|Displays system status or Online Gude|
 |QUIT|Returns to BASIC 7.0|
-
 
 Extended functions:
 |||
@@ -74,7 +69,7 @@ or:
 During installation, the amount of memory available on the VDC chip (16k or 64k bytes) is automatically detected to adapt the program to the machine in use.
 
 
-### Utilization
+### Getting Started
 
 Wedge80 offers 144 theoretical combinations for configuring bitmap graphics using the VDC chip, allowing you to separately select the horizontal and vertical resolutions (up to 840 x 256 pixels) and the size of the color cells (down to 8x2 pixels).
 
@@ -92,6 +87,7 @@ Once the VDC bitmap mode is activated, you can use the following command to draw
 |1|Draw (default)|
 |2|XOR with the pixels already on the screen|
 
+More details on Wedge80 commands and extended functions are available in the docs files included.
 
 ### Online Guide
 
@@ -120,8 +116,7 @@ The 'ESC X' sequence allows you to quickly switch between 40-column and 80-colum
 
 ### Wedge80 Library
 
-Once installed, Wedge80 offers a function library that allows you to use some of its graphics routines directly from a machine language program (like the included demo, Sketch80).
-
+Once installed, Wedge80 offers a function library that allows you to use some of its graphics routines directly from a machine language program (like the included demo, Sketch80).\
 This is done via a Jump Table, which ensures compatibility with any programs developed with this library, even if an updated version of  Wedge80 is released.
 
 
