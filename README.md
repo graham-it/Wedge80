@@ -77,6 +77,25 @@ VDC graphics can be activated using the command:
 
 -    GRAPHIC mode[,clear][,h/res][,v/res][,color]
 
+|mode|Graphic mode|clear|Clear flag|
+|:--:|--|:--:|--|
+|0|VIC-II 40-column text|0|Do not clear (defalut)|
+|1|VIC-II bitmap (320x200)|1|Clear screen (and reset coords)|
+|2|VIC-II split screen bitmap|
+|3|VIC-II multicolor bitmap (160x200)|
+|4|VIC-II split screen multicolor bitmap|
+|5|VDC 80-column text|
+|6|VDC bitmap|
+
+|h/res|Horizontal mode|v/res|Vertical mode|color|Color mode (cell size)|
+|:-:|-|:-:|-|:-:|-|
+|0|320 pixels|0|128 pixels|0|Monochrome|
+|1|360 pixels|1|144 pixels|1|8x8 pixels|
+|2|640 pixels|2|176 pixels|2|8x4 pixels|
+|3|720 pixels|3|200 pixels|3|8x2 pixels|
+|4|800 pixels|4|240 pixels|
+|5|840 pixels|5|256 pixels|
+
 Once the VDC bitmap mode is activated, you can use the following command to draw a point or line on the screen:
 
 -    DRAW [mode][,x0,y0][<TO|,> xn,yn][...]
@@ -95,7 +114,7 @@ The full version of Wedge80 comes with an 'Online Guide', which is installed in 
 
 To view the complete list of Wedge80 commands and extended functions, simply enter the following command at the BASIC prompt:
 
--    HELP +        (with or without space)
+-    HELP +
 
 Additionally, you can get detailed information about a specific command or function using the following syntax:
 
@@ -107,6 +126,9 @@ Where 'keyword' is the word used to identify the command or function you're requ
 ### AUTOFAST mode
 
 When Wedge80 is started, AUTOFAST mode is enabled by default. This allows extended Wedge80 commands to be executed in FAST mode (2 MHz), then automatically reverts to SLOW mode (1 MHz) upon completion.
+
+- AUTOFAST (enables AUTOFAST mode)
+- FAST/SLOW (standard mode)
 
 
 ### ESCAPE sequences
