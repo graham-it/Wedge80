@@ -24,7 +24,7 @@ To access the VDC chip's graphics capabilities, Wedge80 uses the same instructio
 
 Extended commands:
 |||
-|--|--|
+|-|-|
 |GRAPHIC|Selects the current screen mode|
 |COLOR|Sets a color for the selected source|
 |SCNCLR|Clears the selected screen mode|
@@ -42,7 +42,7 @@ Extended commands:
 
 Extended functions:
 |||
-|--|--|
+|-|-|
 |POS|Returns the cursor position within the current text screen window|
 |RCLR|Returns the value of the color source specified|
 |RDOT|Returns the current bitmap coordinates or pixel status|
@@ -123,23 +123,38 @@ Additionally, you can get detailed information about a specific command or funct
 Where 'keyword' is the word used to identify the command or function you're requesting information about.
 
 
-### AUTOFAST mode
+### AUTOFAST Mode
 
 When Wedge80 is started, AUTOFAST mode is enabled by default. This allows extended Wedge80 commands to be executed in FAST mode (2 MHz), then automatically reverts to SLOW mode (1 MHz) upon completion.
 
 - AUTOFAST (enables AUTOFAST mode)
-- FAST/SLOW (standard mode)
+- FAST/SLOW (restore standard modes)
 
 
-### ESCAPE sequences
+### ESCAPE Sequences
 
-The 'ESC X' sequence allows you to quickly switch between 40-column and 80-column text mode. When the 'ESC X' sequence is detected and the VDC is in bitmap mode, the 80-column text mode is automatically restored, transparently to the user.
+Using keyboard in direct mode, the 'ESC X' sequence allows you to quickly switch between 40-column and 80-column text mode. When the 'ESC X' sequence is detected and the VDC is in bitmap mode, the 80-column text mode is automatically restored, transparently to the user.
 
 
 ### Wedge80 Library
 
 Once installed, Wedge80 offers a function library that allows you to use some of its graphics routines directly from a machine language program (like the included demo, Sketch80).\
 This is done via a Jump Table, which ensures compatibility with any programs developed with this library, even if an updated version of  Wedge80 is released.
+
+
+### Included Demos
+
+|File name|Description|
+|-|-|
+|EASY GRAPH|Draws on VDC screen a user-defined mathematical function|
+|GRAPHIC SAMPLE|Draws some geometric shapes|
+|MARBLE|Demonstrates the use of the CIRCLE command|
+|MONOSCOPE|Tests the various graphics modes of the VDC|
+|QIX|Runs a simple animation in color or monochrome mode|
+|RACING CARS|Demonstrates the use of the SSHAPE/GSHAPE commands|
+|SCREEN SAVER|Shows 3 types of user-configurable screen savers|
+|SKETCH80|An example written in ASM that uses the Wedge80 Library|
+|SPACESHIP|Assembles a scene by combining multiple modules|
 
 
 Wedge80 v2.04 (c) 2026 Graham
