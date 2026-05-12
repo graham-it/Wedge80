@@ -125,7 +125,7 @@ Where 'keyword' is the word used to identify the command or function you're requ
 
 ### AUTOFAST Mode
 
-Once Wedge80 is started, AUTOFAST mode is enabled by default. This allows extended Wedge80 commands to be executed in FAST mode (2 MHz), then automatically reverts to SLOW mode (1 MHz) upon completion.
+When Wedge80 is started, AUTOFAST mode is enabled by default. This allows extended Wedge80 commands to be executed in FAST mode (2 MHz), then automatically reverts to SLOW mode (1 MHz) upon completion.
 
 - AUTOFAST (enables AUTOFAST mode)
 - FAST/SLOW (restore standard modes)
