@@ -138,7 +138,7 @@ Using keyboard in direct mode, the 'ESC X' sequence allows you to quickly switch
 
 ### Wedge80 Library
 
-Once installed, Wedge80 offers a function library that allows you to use some of its graphics routines directly from a machine language program (like the included demo, Sketch80).\
+Once installed, Wedge80 offers a function library that allows you to use some of its graphics routines directly from a machine language program (like the Sketch80 demo).\
 This is done via a Jump Table, which ensures compatibility with any programs developed with this library, even if an updated version of  Wedge80 is released.
 
 
@@ -153,8 +153,8 @@ This is done via a Jump Table, which ensures compatibility with any programs dev
 |QIX|Runs a simple animation in color or monochrome mode|
 |RACING CARS|Demonstrates the use of the SSHAPE/GSHAPE commands|
 |SCREEN SAVER|Shows 3 types of user-configurable screen savers|
-|SKETCH80|An example written in ASM that uses the Wedge80 Library|
 |SPACESHIP|Assembles a scene by combining multiple modules|
+|SKETCH80|An example written in ASM that uses the Wedge80 Library|
 
 
 Wedge80 v2.04 (c) 2026 Graham
