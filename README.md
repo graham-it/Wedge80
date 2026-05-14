@@ -104,7 +104,7 @@ Once the VDC bitmap mode is activated, you can use the following command to draw
 |1|Draw pixels (default)|
 |2|XOR with the pixels already on the screen|
 
-More details on Wedge80 commands and extended functions are available in the docs files included.
+More details on Wedge80 extended commands and functions are available in the docs files included.
 
 ### Online Guide
 
