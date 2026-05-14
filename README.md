@@ -22,7 +22,7 @@ Wedge80 is compatible with the PAL versions of the C128/C128D, equipped with 16k
 
 To access the VDC chip's graphics capabilities, Wedge80 uses the same instruction set as BASIC 7.0, extending the number and range of supported parameters. Thus, Wedge80 can handle both VDC and VIC-II graphics, ensuring full compatibility with existing software.
 
-|Command|Description|
+|Commands|Description|
 |-|-|
 |GRAPHIC|Selects the current screen mode|
 |COLOR|Sets a color for the selected source|
@@ -39,7 +39,7 @@ To access the VDC chip's graphics capabilities, Wedge80 uses the same instructio
 |HELP|Displays system status or Online Gude|
 |QUIT|Returns to BASIC 7.0|
 
-|Function|Description|
+|Functions|Description|
 |-|-|
 |RGR|Returns the value of the current screen mode|
 |RCLR|Returns the value of the color source specified|
