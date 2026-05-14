@@ -153,8 +153,8 @@ This is done via a Jump Table, which ensures compatibility with any programs dev
 |QIX|Runs a simple animation in color or monochrome mode|
 |RACING CARS|Demonstrates the use of the SSHAPE/GSHAPE commands|
 |SCREEN SAVER|Shows 3 types of user-configurable screen savers|
-|SPACESHIP|Assembles a scene by combining multiple modules|
 |SKETCH80|An example written in ASM that uses the Wedge80 Library|
+|SPACESHIP|A scene made by combining multiple modules|
 
 
 Wedge80 v2.04 (c) 2026 Graham
